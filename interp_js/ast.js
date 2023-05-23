@@ -1,3 +1,5 @@
-class AST {}
+class AST {
+    constructor() {}
+}
 
 export { AST };
