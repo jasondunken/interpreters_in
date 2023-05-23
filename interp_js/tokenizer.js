@@ -39,8 +39,6 @@ class Tokenizer {
 
         this.ignoreWhitespace();
 
-        console.log("ch: ", this.ch);
-
         switch (this.ch) {
             case Tokens.ASSIGN.literal:
                 if (this.ch + this.peekChar() === Tokens.EQ.literal) {
@@ -154,15 +152,13 @@ class Tokenizer {
     }
 
     test() {
-        const tokens = [];
         let token = this.nextToken();
-        console.log("Token: ", token);
+        console.log("\r");
+        console.log(token);
         while (token.type != Tokens.EOF.token) {
             token = this.nextToken();
-            console.log("Token: ", token);
-            tokens.push(token);
+            console.log(token);
         }
-        return tokens;
     }
 }
 

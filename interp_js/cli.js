@@ -46,14 +46,14 @@ class Monkey {
     }
 
     loadFile(path) {
-        console.log("loading: ", path, "...");
+        console.log("loading: ", path);
         fs.readFile(path, "utf8", (err, data) => {
             if (err) {
                 console.error("ERROR====>>>> ", err);
                 return;
             }
+            this.loadingFile = false;
             this.doTheMonkey(data);
-            this.loop();
         });
     }
 
