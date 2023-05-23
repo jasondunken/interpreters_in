@@ -100,12 +100,12 @@ class Tokenizer {
             default:
                 if (this.isLetter(this.ch)) {
                     token.literal = this.readIdentifier();
-                    token.type = Token.lookupIdentity(token.literal);
+                    token.token = Token.lookupIdentity(token.literal);
                     // need to return early here, readIdentifier has advanced the read position
                     return token;
                 }
                 if (this.isNumber(this.ch)) {
-                    token.type = Tokens.INT.token;
+                    token.token = Tokens.INT.token;
                     token.literal = this.readValue();
                     // need to return early here, readValue has advanced the read position
                     return token;
@@ -155,7 +155,7 @@ class Tokenizer {
         let token = this.nextToken();
         console.log("\r");
         console.log(token);
-        while (token.type != Tokens.EOF.token) {
+        while (token.token != Tokens.EOF.token) {
             token = this.nextToken();
             console.log(token);
         }

@@ -1,6 +1,6 @@
 class Token {
-    constructor(type, literal) {
-        this.type = type || "invalid";
+    constructor(token, literal) {
+        this.token = token || "invalid";
         this.literal = literal || "invalid";
     }
 

@@ -59,9 +59,12 @@ class Monkey {
 
     doTheMonkey(inputString) {
         const tokenizer = new Tokenizer(inputString);
-        tokenizer.test();
-        //const parser = new Parser(tokenizer);
-        //const program = parser.parse();
+        //tokenizer.test();
+        const parser = new Parser(tokenizer);
+        const program = parser.parse();
+        console.log(program);
+        console.log("program.toString: ", program.toString());
+        console.log("errors: ", parser.getErrors());
         this.loop();
     }
 }
