@@ -98,7 +98,7 @@ class BlockStatement extends Statement {
     toString() {
         let blockString = "";
         this.statements.forEach((statement) => {
-            blockString += statement.expression.toString();
+            blockString += statement.toString();
         });
         return blockString;
     }

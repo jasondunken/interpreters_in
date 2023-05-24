@@ -13,7 +13,7 @@ import {
     InfixExpression,
     CallExpression,
 } from "./ast.js";
-import { Token, Tokens } from "./token.js";
+import { Tokens } from "./token.js";
 
 const PRECEDENCE = {
     _: 0,
@@ -62,7 +62,6 @@ class Parser {
         this.registerPrefix(Tokens.IF.token, this.parseIfExpression);
 
         this.registerPrefix(Tokens.LPAREN.token, this.parseGroupedExpression);
-        //this.registerPrefix(token.LBRACE.token, this.parseGroupedExpression);
 
         this.registerPrefix(Tokens.FUNCTION.token, this.parseFunctionLiteral);
 
@@ -208,7 +207,6 @@ class Parser {
             return null;
         }
         let leftExp = prefixFn(this);
-        //console.log("leftExp: ", leftExp);
 
         while (!this.peekTokenIs(Tokens.SEMICOLON.token) && precedence < this.peekPrecedence()) {
             const infixFn = this.infixParseFns.get(this.peekToken.token);
@@ -330,7 +328,6 @@ class Parser {
             identifiers.push(identity);
         }
         if (!this.expectPeek(Tokens.RPAREN.token)) return null;
-        //console.log("ids: ", identifiers);
         return identifiers;
     }
 

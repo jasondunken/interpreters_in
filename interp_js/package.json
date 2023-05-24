@@ -1,13 +1,13 @@
 {
     "name": "interp_js",
     "version": "1.0.0",
-    "description": "",
-    "main": "ast.js",
+    "description": "A Monkeyscript REPL in javascript",
+    "main": "cli.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [],
-    "author": "",
+    "author": "bitbytebytes.io",
     "license": "ISC",
     "type": "module"
 }
