@@ -54,9 +54,9 @@ class LetStatement extends Statement {
 
     toString() {
         if (this.value) {
-            return `${this.token.literal} ${this.name.token.literal} ${Tokens.ASSIGN.literal} ${this.value};`;
+            return `${this.token.literal} ${this.name.token.literal} ${Tokens.ASSIGN.literal} ${this.value};\n`;
         }
-        return `${this.token.literal} ${this.name.token.literal} ${Tokens.ASSIGN.literal};`;
+        return `${this.token.literal} ${this.name.token.literal} ${Tokens.ASSIGN.literal};\n`;
     }
 }
 
@@ -68,9 +68,9 @@ class ReturnStatement extends Statement {
 
     toString() {
         if (this.returnValue) {
-            return `${this.token.literal} ${this.returnValue.toString()};`;
+            return `${this.token.literal} ${this.returnValue.toString()};\n`;
         }
-        return `${this.token.literal};`;
+        return `${this.token.literal};\n`;
     }
 }
 
@@ -85,6 +85,22 @@ class ExpressionStatement extends Statement {
             return this.expression.toString();
         }
         return "";
+    }
+}
+
+class BlockStatement extends Statement {
+    constructor(token) {
+        super(token);
+        this.statements = []; // Statement[]
+    }
+    statements;
+
+    toString() {
+        let blockString = "";
+        this.statements.forEach((statement) => {
+            blockString += statement.expression.toString();
+        });
+        return blockString;
     }
 }
 
@@ -106,6 +122,34 @@ class IntegerLiteral extends Expression {
 
     toString() {
         return this.token.literal;
+    }
+}
+
+class Boolean extends Expression {
+    constructor(token, value) {
+        super(token);
+        this.value = value;
+    }
+
+    toString() {
+        return this.token.literal;
+    }
+}
+
+class IfExpression extends Expression {
+    constructor(token, condition, consequence, alternative) {
+        super(token);
+        this.condition = condition; // Expression
+        this.consequence = consequence; // BlockStatement
+        this.alternative = alternative; // BlockStatement
+    }
+
+    toString() {
+        let ifString = `if ${this.condition.toString()} ${this.consequence.toString()}`;
+        if (this.alternative) {
+            ifString += ` else ${this.alternative.toString()}`;
+        }
+        return ifString;
     }
 }
 
@@ -140,8 +184,11 @@ export {
     LetStatement,
     ReturnStatement,
     ExpressionStatement,
+    BlockStatement,
     Identifier,
     IntegerLiteral,
+    Boolean,
+    IfExpression,
     PrefixExpression,
     InfixExpression,
 };

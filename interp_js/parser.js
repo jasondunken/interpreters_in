@@ -3,12 +3,15 @@ import {
     LetStatement,
     ReturnStatement,
     ExpressionStatement,
+    BlockStatement,
     Identifier,
     IntegerLiteral,
+    Boolean,
+    IfExpression,
     PrefixExpression,
     InfixExpression,
 } from "./ast.js";
-import { Token, Tokens } from "./token.js";
+import { Tokens } from "./token.js";
 
 const PRECEDENCE = {
     _: 0,
@@ -47,8 +50,18 @@ class Parser {
 
         this.registerPrefix(Tokens.IDENT.token, this.parseIdentifier);
         this.registerPrefix(Tokens.INT.token, this.parseIntegerLiteral);
+        this.registerPrefix(Tokens.TRUE.token, this.parseBoolean);
+        this.registerPrefix(Tokens.FALSE.token, this.parseBoolean);
+
         this.registerPrefix(Tokens.BANG.token, this.parsePrefixExpression);
         this.registerPrefix(Tokens.MINUS.token, this.parsePrefixExpression);
+
+        this.registerPrefix(Tokens.IF.token, this.parseIfExpression);
+
+        this.registerPrefix(Tokens.LPAREN.token, this.parseGroupedExpression);
+        //this.registerPrefix(token.LBRACE.token, this.parseGroupedExpression);
+        // this.registerPrefix(token.LPAREN.token, this.parseGroupedExpression);
+        // this.registerPrefix(token.LPAREN.token, this.parseGroupedExpression);
 
         this.registerInfix(Tokens.PLUS.token, this.parseInfixExpression);
         this.registerInfix(Tokens.MINUS.token, this.parseInfixExpression);
@@ -92,7 +105,7 @@ class Parser {
             this.nextToken();
             return true;
         } else {
-            console.log("parser error!");
+            console.log(`expect peek error! token: ${token}`);
             this.peekError(token);
             return false;
         }
@@ -171,6 +184,22 @@ class Parser {
         return statement;
     }
 
+    parseBlockStatement() {
+        const block = new BlockStatement(this.curToken);
+
+        this.nextToken();
+
+        while (!this.curTokenIs(Tokens.RBRACE.token) && !this.curTokenIs(Tokens.EOF)) {
+            const statement = this.parseStatement();
+            if (statement) {
+                block.statements.push(statement);
+            }
+
+            this.nextToken();
+        }
+        return block;
+    }
+
     parseExpression(precedence) {
         const prefixFn = this.prefixParseFns.get(this.curToken.token);
         if (!prefixFn) {
@@ -188,8 +217,39 @@ class Parser {
             this.nextToken();
             leftExp = infixFn(this, leftExp);
         }
-
         return leftExp;
+    }
+
+    parseGroupedExpression(self) {
+        self.nextToken();
+
+        const expression = self.parseExpression(PRECEDENCE.LOWEST);
+        if (!self.expectPeek(Tokens.RPAREN.token)) {
+            return null;
+        }
+        return expression;
+    }
+
+    parseIfExpression(self) {
+        const expression = new IfExpression(self.curToken.token);
+
+        if (!self.expectPeek(Tokens.LPAREN.token)) return null;
+
+        self.nextToken();
+        expression.condition = self.parseExpression(PRECEDENCE.LOWEST);
+
+        if (!self.expectPeek(Tokens.RPAREN.token)) return null;
+        if (!self.expectPeek(Tokens.LBRACE.token)) return null;
+
+        expression.consequence = self.parseBlockStatement();
+
+        if (self.peekTokenIs(Tokens.ELSE.token)) {
+            self.nextToken();
+            if (!self.expectPeek(Tokens.LBRACE.token)) return null;
+
+            expression.alternative = self.parseBlockStatement();
+        }
+        return expression;
     }
 
     peekPrecedence() {
@@ -221,6 +281,10 @@ class Parser {
         }
 
         return literal;
+    }
+
+    parseBoolean(self) {
+        return new Boolean(self.curToken, self.curTokenIs(Tokens.TRUE.token));
     }
 
     parsePrefixExpression(self) {
