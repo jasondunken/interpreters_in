@@ -5,6 +5,7 @@ import {
     ExpressionStatement,
     BlockStatement,
     Identifier,
+    FunctionLiteral,
     IntegerLiteral,
     Boolean,
     IfExpression,
@@ -60,8 +61,8 @@ class Parser {
 
         this.registerPrefix(Tokens.LPAREN.token, this.parseGroupedExpression);
         //this.registerPrefix(token.LBRACE.token, this.parseGroupedExpression);
-        // this.registerPrefix(token.LPAREN.token, this.parseGroupedExpression);
-        // this.registerPrefix(token.LPAREN.token, this.parseGroupedExpression);
+
+        this.registerPrefix(Tokens.FUNCTION.token, this.parseFunctionLiteral);
 
         this.registerInfix(Tokens.PLUS.token, this.parseInfixExpression);
         this.registerInfix(Tokens.MINUS.token, this.parseInfixExpression);
@@ -207,6 +208,7 @@ class Parser {
             return null;
         }
         let leftExp = prefixFn(this);
+        console.log("leftExp: ", leftExp);
 
         while (!this.peekTokenIs(Tokens.SEMICOLON.token) && precedence < this.peekPrecedence()) {
             const infixFn = this.infixParseFns.get(this.peekToken.token);
@@ -268,6 +270,41 @@ class Parser {
 
     parseIdentifier(self) {
         return new Identifier(self.curToken, self.curToken.literal);
+    }
+
+    parseFunctionLiteral(self) {
+        const literal = new FunctionLiteral(self.curToken);
+        if (!self.expectPeek(Tokens.LPAREN.token)) return null;
+
+        literal.parameters = self.parseFunctionParameters();
+
+        if (!self.expectPeek(Tokens.LBRACE.token)) return null;
+
+        literal.body = self.parseBlockStatement();
+        return literal;
+    }
+
+    parseFunctionParameters() {
+        const identifiers = [];
+        if (this.peekTokenIs(Tokens.RPAREN.token)) {
+            this.nextToken();
+            return identifiers;
+        }
+
+        this.nextToken();
+
+        let identity = new Identifier(this.curToken, this.curToken.literal);
+        identifiers.push(identity);
+        while (this.peekTokenIs(Tokens.COMMA.token)) {
+            this.nextToken();
+            this.nextToken();
+
+            identity = new Identifier(this.curToken, this.curToken.literal);
+            identifiers.push(identity);
+        }
+        if (!this.expectPeek(Tokens.RPAREN.token)) return null;
+        console.log("ids: ", identifiers);
+        return identifiers;
     }
 
     parseIntegerLiteral(self) {

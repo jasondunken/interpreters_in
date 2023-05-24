@@ -115,6 +115,22 @@ class Identifier extends Expression {
     }
 }
 
+class FunctionLiteral extends Expression {
+    constructor(token) {
+        super(token);
+        this.parameters = []; // Identifier
+    }
+    body; // BlockStatement
+
+    toString() {
+        const params = [];
+        this.parameters.forEach((param) => {
+            params.push(param.toString());
+        });
+        return `${this.tokenLiteral()}(${params.join(", ")}) ${this.body.toString()}`;
+    }
+}
+
 class IntegerLiteral extends Expression {
     constructor(token) {
         super(token);
@@ -186,6 +202,7 @@ export {
     ExpressionStatement,
     BlockStatement,
     Identifier,
+    FunctionLiteral,
     IntegerLiteral,
     Boolean,
     IfExpression,
