@@ -10,11 +10,11 @@ class Program {
     }
 
     toString() {
-        let statementStrings = "";
+        let programString = "";
         this.statements.forEach((statement) => {
-            statementStrings += statement.toString() + "\n";
+            programString += statement.toString();
         });
-        return statementStrings;
+        return programString;
     }
 }
 
@@ -54,9 +54,9 @@ class LetStatement extends Statement {
 
     toString() {
         if (this.value) {
-            return `${this.token.literal} ${this.name.token.literal} ${Tokens.ASSIGN.literal} ${this.value};\n`;
+            return `${this.token.literal} ${this.name.token.literal} ${Tokens.ASSIGN.literal} ${this.value};`;
         }
-        return `${this.token.literal} ${this.name.token.literal} ${Tokens.ASSIGN.literal};\n`;
+        return `${this.token.literal} ${this.name.token.literal} ${Tokens.ASSIGN.literal};`;
     }
 }
 
@@ -68,9 +68,9 @@ class ReturnStatement extends Statement {
 
     toString() {
         if (this.returnValue) {
-            return `${this.token.literal} ${this.returnValue.toString()};\n`;
+            return `${this.token.literal} ${this.returnValue.toString()};`;
         }
-        return `${this.token.literal};\n`;
+        return `${this.token.literal};`;
     }
 }
 
@@ -169,6 +169,23 @@ class IfExpression extends Expression {
     }
 }
 
+class CallExpression extends Expression {
+    constructor(token, func) {
+        super(token);
+        this.func = func;
+        this.arguments = [];
+    }
+    func;
+
+    toString() {
+        const args = [];
+        this.arguments.forEach((arg) => {
+            args.push(arg.toString());
+        });
+        return `${this.func.toString()}(${args.join(", ")})`;
+    }
+}
+
 class PrefixExpression extends Expression {
     constructor(token, operator) {
         super(token);
@@ -206,6 +223,7 @@ export {
     IntegerLiteral,
     Boolean,
     IfExpression,
+    CallExpression,
     PrefixExpression,
     InfixExpression,
 };

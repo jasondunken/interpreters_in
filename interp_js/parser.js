@@ -11,8 +11,9 @@ import {
     IfExpression,
     PrefixExpression,
     InfixExpression,
+    CallExpression,
 } from "./ast.js";
-import { Tokens } from "./token.js";
+import { Token, Tokens } from "./token.js";
 
 const PRECEDENCE = {
     _: 0,
@@ -34,6 +35,7 @@ const PRECEDENCES = {
     MINUS: PRECEDENCE.SUM,
     SLASH: PRECEDENCE.PRODUCT,
     ASTERISK: PRECEDENCE.PRODUCT,
+    LPAREN: PRECEDENCE.CALL,
 };
 
 class Parser {
@@ -72,6 +74,8 @@ class Parser {
         this.registerInfix(Tokens.NOT_EQ.token, this.parseInfixExpression);
         this.registerInfix(Tokens.LT.token, this.parseInfixExpression);
         this.registerInfix(Tokens.GT.token, this.parseInfixExpression);
+
+        this.registerInfix(Tokens.LPAREN.token, this.parseCallExpression);
     }
 
     initialize() {
@@ -143,21 +147,17 @@ class Parser {
     parseLetStatement() {
         const statement = new LetStatement(this.curToken);
 
-        if (!this.expectPeek(Tokens.IDENT.token)) {
-            return null;
-        }
+        if (!this.expectPeek(Tokens.IDENT.token)) return null;
 
         statement.name = new Identifier(this.curToken, this.curToken.literal);
 
-        if (!this.expectPeek(Tokens.ASSIGN.token)) {
-            return null;
-        }
+        if (!this.expectPeek(Tokens.ASSIGN.token)) return null;
 
         this.nextToken();
 
         statement.value = this.parseExpression(PRECEDENCE.LOWEST);
 
-        while (this.peekTokenIs(Tokens.SEMICOLON.token)) {
+        if (this.peekTokenIs(Tokens.SEMICOLON.token)) {
             this.nextToken();
         }
         return statement;
@@ -167,9 +167,9 @@ class Parser {
         const statement = new ReturnStatement(this.curToken);
         this.nextToken();
 
-        // TODO: skipping expressions for now;
+        statement.returnValue = this.parseExpression(PRECEDENCE.LOWEST);
 
-        while (!this.curTokenIs(Tokens.SEMICOLON.token)) {
+        if (this.peekTokenIs(Tokens.SEMICOLON.token)) {
             this.nextToken();
         }
         return statement;
@@ -208,7 +208,7 @@ class Parser {
             return null;
         }
         let leftExp = prefixFn(this);
-        console.log("leftExp: ", leftExp);
+        //console.log("leftExp: ", leftExp);
 
         while (!this.peekTokenIs(Tokens.SEMICOLON.token) && precedence < this.peekPrecedence()) {
             const infixFn = this.infixParseFns.get(this.peekToken.token);
@@ -252,6 +252,33 @@ class Parser {
             expression.alternative = self.parseBlockStatement();
         }
         return expression;
+    }
+
+    parseCallExpression(self, func) {
+        const expression = new CallExpression(self.curToken, func);
+        expression.arguments = self.parseCallArguments();
+        return expression;
+    }
+
+    parseCallArguments() {
+        const args = []; // Expression[]
+        if (this.peekTokenIs(Tokens.RPAREN.token)) {
+            this.nextToken();
+            return args;
+        }
+
+        this.nextToken();
+        args.push(this.parseExpression(PRECEDENCE.LOWEST));
+
+        while (this.peekTokenIs(Tokens.COMMA.token)) {
+            this.nextToken();
+            this.nextToken();
+            args.push(this.parseExpression(PRECEDENCE.LOWEST));
+        }
+
+        if (!this.expectPeek(Tokens.RPAREN.token)) return null;
+
+        return args;
     }
 
     peekPrecedence() {
@@ -303,7 +330,7 @@ class Parser {
             identifiers.push(identity);
         }
         if (!this.expectPeek(Tokens.RPAREN.token)) return null;
-        console.log("ids: ", identifiers);
+        //console.log("ids: ", identifiers);
         return identifiers;
     }
 
