@@ -89,14 +89,59 @@ class ExpressionStatement extends Statement {
 }
 
 class Identifier extends Expression {
-    constructor(token) {
+    constructor(token, value) {
         super(token);
+        this.value = value;
     }
-    value;
 
     toString() {
         return this.value;
     }
 }
 
-export { Program, LetStatement, ReturnStatement, ExpressionStatement, Identifier };
+class IntegerLiteral extends Expression {
+    constructor(token) {
+        super(token);
+    }
+
+    toString() {
+        return this.token.literal;
+    }
+}
+
+class PrefixExpression extends Expression {
+    constructor(token, operator) {
+        super(token);
+        this.operator = operator;
+    }
+    right;
+
+    toString() {
+        return `(${this.operator}${this.right})`;
+    }
+}
+
+class InfixExpression extends Expression {
+    constructor(token, operator, left) {
+        super(token);
+        this.operator = operator;
+        this.left = left;
+    }
+    left;
+    right;
+
+    toString() {
+        return `(${this.left} ${this.operator} ${this.right})`;
+    }
+}
+
+export {
+    Program,
+    LetStatement,
+    ReturnStatement,
+    ExpressionStatement,
+    Identifier,
+    IntegerLiteral,
+    PrefixExpression,
+    InfixExpression,
+};

@@ -4,7 +4,9 @@ import { Parser } from "./parser.js";
 import * as fs from "fs";
 import * as readline from "readline";
 
-console.log("***Monkey Code Interpreter_JS***");
+console.log("***                                                                  ***");
+console.log("***                    Monkey Code Interpreter_JS                    ***");
+console.log("***                                                                  ***");
 const inputFile = process.argv[2];
 const args = process.argv.slice(3);
 
@@ -62,9 +64,9 @@ class Monkey {
         //tokenizer.test();
         const parser = new Parser(tokenizer);
         const program = parser.parse();
-        console.log(program);
-        console.log("program.toString: ", program.toString());
-        console.log("errors: ", parser.getErrors());
+        //console.log(program);
+        console.log("p.toString: ", program.toString());
+        console.log("p.errors: ", parser.getErrors());
         this.loop();
     }
 }
