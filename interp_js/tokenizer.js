@@ -25,7 +25,6 @@ class Tokenizer {
         }
         this.position = this.readPosition;
         this.readPosition++;
-        // console.log(`readChar: p:${this.position}, rp:${this.readPosition}, ch:${this.ch}`);
     }
 
     peekChar() {
@@ -105,15 +104,14 @@ class Tokenizer {
                     return token;
                 }
                 if (this.isNumber(this.ch)) {
-                    token.token = Tokens.INT.token;
                     token.literal = this.readValue();
+                    token.token = Tokens.INT.token;
                     // need to return early here, readValue has advanced the read position
                     return token;
                 } else {
                     token = new Token(Tokens.ILLEGAL.token, this.ch);
                 }
         }
-
         this.readChar();
         return token;
     }

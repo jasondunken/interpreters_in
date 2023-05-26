@@ -4,9 +4,9 @@ import { Parser } from "./parser.js";
 import * as fs from "fs";
 import * as readline from "readline";
 
-console.log("***                                                                  ***");
-console.log("***                    Monkey Code Interpreter_JS                    ***");
-console.log("***                                                                  ***");
+console.log("***                                                                   ***");
+console.log("***                    Monkeyscript Interpreter_JS                    ***");
+console.log("***                                                                   ***");
 const inputFile = process.argv[2];
 const args = process.argv.slice(3);
 
@@ -18,11 +18,10 @@ class Monkey {
         });
 
         if (inputFile) {
-            this.loadingFile = true;
-            this.loadFile(inputFile);
+            this.loadFile(inputFile, args);
         }
 
-        if (!this.loadingFIle) {
+        if (!this.loading) {
             this.loop();
         }
     }
@@ -36,30 +35,34 @@ class Monkey {
     handleCommand(command) {
         const cmd = command.split(" ");
         switch (cmd[0]) {
-            case "EXIT":
+            case "exit":
                 this.reader.close();
                 return;
             case "load":
-                this.loadFile(cmd[1]);
-                break;
+                this.loadFile(cmd[1], cmd.slice(2));
+                return;
             default:
-                this.doTheMonkey(command);
+                if (command.length > 0) {
+                    this.doTheMonkey(command);
+                }
         }
     }
 
-    loadFile(path) {
+    loadFile(path, args) {
         console.log("loading: ", path);
+        this.loading = true;
         fs.readFile(path, "utf8", (err, data) => {
             if (err) {
-                console.error("ERROR====>>>> ", err);
-                return;
+                console.error("FILE READ ERROR====>>>> ", err);
+            } else {
+                this.doTheMonkey(data, args);
             }
-            this.loadingFile = false;
-            this.doTheMonkey(data);
+            this.loading = false;
+            this.loop();
         });
     }
 
-    doTheMonkey(inputString) {
+    doTheMonkey(inputString, args) {
         const tokenizer = new Tokenizer(inputString);
         //tokenizer.test();
         const parser = new Parser(tokenizer);

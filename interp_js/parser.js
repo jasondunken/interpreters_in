@@ -49,20 +49,18 @@ class Parser {
 
     constructor(tokenizer) {
         this.tokenizer = tokenizer;
-        this.initialize();
+        // prime current and peek tokens
+        this.nextToken();
+        this.nextToken();
 
         this.registerPrefix(Tokens.IDENT.token, this.parseIdentifier);
         this.registerPrefix(Tokens.INT.token, this.parseIntegerLiteral);
         this.registerPrefix(Tokens.TRUE.token, this.parseBoolean);
         this.registerPrefix(Tokens.FALSE.token, this.parseBoolean);
-
         this.registerPrefix(Tokens.BANG.token, this.parsePrefixExpression);
         this.registerPrefix(Tokens.MINUS.token, this.parsePrefixExpression);
-
         this.registerPrefix(Tokens.IF.token, this.parseIfExpression);
-
         this.registerPrefix(Tokens.LPAREN.token, this.parseGroupedExpression);
-
         this.registerPrefix(Tokens.FUNCTION.token, this.parseFunctionLiteral);
 
         this.registerInfix(Tokens.PLUS.token, this.parseInfixExpression);
@@ -73,14 +71,7 @@ class Parser {
         this.registerInfix(Tokens.NOT_EQ.token, this.parseInfixExpression);
         this.registerInfix(Tokens.LT.token, this.parseInfixExpression);
         this.registerInfix(Tokens.GT.token, this.parseInfixExpression);
-
         this.registerInfix(Tokens.LPAREN.token, this.parseCallExpression);
-    }
-
-    initialize() {
-        // prime both tokens
-        this.nextToken();
-        this.nextToken();
     }
 
     registerPrefix(tokenType, fn) {
@@ -236,6 +227,7 @@ class Parser {
         if (!self.expectPeek(Tokens.LPAREN.token)) return null;
 
         self.nextToken();
+
         expression.condition = self.parseExpression(PRECEDENCE.LOWEST);
 
         if (!self.expectPeek(Tokens.RPAREN.token)) return null;
@@ -340,7 +332,6 @@ class Parser {
             this.errors.push(`could not parse ${self.curToken.literal} as integer`);
             return null;
         }
-
         return literal;
     }
 

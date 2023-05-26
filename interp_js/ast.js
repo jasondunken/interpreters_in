@@ -20,6 +20,7 @@ class Program {
 
 class Node {
     token;
+
     constructor(token) {
         this.token = token;
     }
@@ -46,11 +47,12 @@ class Expression extends Node {
 }
 
 class LetStatement extends Statement {
+    name;
+    value;
+
     constructor(token) {
         super(token);
     }
-    name;
-    value;
 
     toString() {
         if (this.value) {
@@ -61,10 +63,11 @@ class LetStatement extends Statement {
 }
 
 class ReturnStatement extends Statement {
+    returnValue;
+
     constructor(token) {
         super(token);
     }
-    returnValue;
 
     toString() {
         if (this.returnValue) {
@@ -75,10 +78,11 @@ class ReturnStatement extends Statement {
 }
 
 class ExpressionStatement extends Statement {
+    expression;
+
     constructor(token) {
         super(token);
     }
-    expression;
 
     toString() {
         if (this.expression) {
@@ -93,7 +97,6 @@ class BlockStatement extends Statement {
         super(token);
         this.statements = []; // Statement[]
     }
-    statements;
 
     toString() {
         let blockString = "";
@@ -116,11 +119,12 @@ class Identifier extends Expression {
 }
 
 class FunctionLiteral extends Expression {
+    body; // BlockStatement
+
     constructor(token) {
         super(token);
         this.parameters = []; // Identifier
     }
-    body; // BlockStatement
 
     toString() {
         const params = [];
@@ -175,7 +179,6 @@ class CallExpression extends Expression {
         this.func = func;
         this.arguments = [];
     }
-    func;
 
     toString() {
         const args = [];
@@ -187,11 +190,12 @@ class CallExpression extends Expression {
 }
 
 class PrefixExpression extends Expression {
+    right;
+
     constructor(token, operator) {
         super(token);
         this.operator = operator;
     }
-    right;
 
     toString() {
         return `(${this.operator}${this.right})`;
@@ -199,13 +203,13 @@ class PrefixExpression extends Expression {
 }
 
 class InfixExpression extends Expression {
+    right;
+
     constructor(token, operator, left) {
         super(token);
         this.operator = operator;
         this.left = left;
     }
-    left;
-    right;
 
     toString() {
         return `(${this.left} ${this.operator} ${this.right})`;
