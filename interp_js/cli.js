@@ -1,5 +1,6 @@
 import { Tokenizer } from "./tokenizer.js";
 import { Parser } from "./parser.js";
+import { Evaluator } from "./evaluator.js";
 
 import * as fs from "fs";
 import * as readline from "readline";
@@ -68,6 +69,9 @@ class Monkey {
         const parser = new Parser(tokenizer);
         const program = parser.parse();
         //console.log(program);
+        const evaluator = new Evaluator();
+        const evaluation = evaluator.eval(program);
+        console.log("eval: ", evaluation);
         console.log("p.toString: ", program.toString());
         console.log("p.errors: ", parser.getErrors());
         this.loop();
