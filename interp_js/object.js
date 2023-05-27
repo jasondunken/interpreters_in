@@ -53,4 +53,4 @@ class Null extends Object {
     }
 }
 
-export { Integer, Boolean, Null };
+export { ObjectType, Integer, Boolean, Null };
