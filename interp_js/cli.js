@@ -78,12 +78,15 @@ class Monkey {
     }
 }
 
+new Monkey(inputFile, args);
+
 export class Log {
     static LogInfo(obj, string) {
         string = `${obj.constructor.name}::info::${string}`;
         console.log(string);
         Log.Update(string);
     }
+
     static LogError(obj, string) {
         string = `${obj.constructor.name}::error::${string}`;
         console.log(string);
@@ -91,11 +94,10 @@ export class Log {
     }
 
     static Update(string) {
+        fs.existsSync("logs") || fs.mkdirSync("logs");
         string = `${new Date().toISOString()}_${string}\n`;
-        fs.writeFile("log.txt", string, { flag: "a+" }, (err) => {
+        fs.writeFile("logs/monkey-trouble.mt", string, { flag: "a+" }, (err) => {
             if (err) throw err;
         });
     }
 }
-
-new Monkey(inputFile, args);
