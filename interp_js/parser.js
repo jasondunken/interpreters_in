@@ -1,3 +1,4 @@
+import { Log } from "./cli.js";
 import {
     Program,
     LetStatement,
@@ -100,7 +101,7 @@ class Parser {
             this.nextToken();
             return true;
         } else {
-            console.log(`expect peek error! token: ${token}`);
+            Log.LogError(this, `expect peek error! token: ${token}`);
             this.peekError(token);
             return false;
         }

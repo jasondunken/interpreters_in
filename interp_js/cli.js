@@ -50,11 +50,11 @@ class Monkey {
     }
 
     loadFile(path, args) {
-        console.log("loading: ", path);
+        Log.LogInfo(this, `loading: ${path}`);
         this.loading = true;
         fs.readFile(path, "utf8", (err, data) => {
             if (err) {
-                console.error("FILE READ ERROR====>>>> ", err);
+                Log.LogError(this, `can't read file>>>> ${err}`);
             } else {
                 this.doTheMonkey(data, args);
             }
@@ -70,11 +70,32 @@ class Monkey {
         const program = parser.parse();
         //console.log(program);
         const evaluator = new Evaluator();
+        // console.log("p.errors: ", parser.getErrors());
+        console.log("program string: ", program.toString());
         const evaluation = evaluator.eval(program);
-        console.log("eval: ", evaluation);
-        console.log("p.toString: ", program.toString());
-        console.log("p.errors: ", parser.getErrors());
+        console.log("evaluates to: ", evaluation);
         this.loop();
     }
 }
+
+export class Log {
+    static LogInfo(obj, string) {
+        string = `${obj.constructor.name}::info::${string}`;
+        console.log(string);
+        Log.Update(string);
+    }
+    static LogError(obj, string) {
+        string = `${obj.constructor.name}::error::${string}`;
+        console.log(string);
+        Log.Update(string);
+    }
+
+    static Update(string) {
+        string = `${new Date().toISOString()}_${string}\n`;
+        fs.writeFile("log.txt", string, { flag: "a+" }, (err) => {
+            if (err) throw err;
+        });
+    }
+}
+
 new Monkey(inputFile, args);

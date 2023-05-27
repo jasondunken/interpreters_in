@@ -1,8 +1,9 @@
 import * as Object from "./object.js";
+import { Log } from "./cli.js";
 
 class Evaluator {
-    TRUE = new Object.Boolean(true);
-    FALSE = new Object.Boolean(false);
+    TRUE = new Object.Boolean("true");
+    FALSE = new Object.Boolean("false");
     NULL = new Object.Null();
 
     eval(node) {
@@ -23,7 +24,7 @@ class Evaluator {
                 console.log("intLit: ", nodeType);
                 break;
             default:
-                console.log("unrecognized node type: ", nodeType);
+                Log.LogError(this, `unrecognized node type: ${nodeType}`);
                 return this.NULL;
         }
     }
@@ -45,10 +46,21 @@ class Evaluator {
         }
     }
 
+    evalBangOperatorExpression(right) {
+        switch (right.value) {
+            case "true":
+                return this.FALSE;
+            case "false":
+                return this.TRUE;
+            case "null":
+                return this.TRUE;
+            default:
+                return this.FALSE;
+        }
+    }
+
     boolNodeToBoolObject(value) {
-        if (value) {
-            return node.value === "true" ? this.TRUE : this.FALSE;
-        } else return this.NULL;
+        return value ? this.TRUE : this.FALSE;
     }
 }
 
