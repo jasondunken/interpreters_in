@@ -90,13 +90,21 @@ new Monkey(inputFile, args);
 
 export class Log {
     static LogInfo(obj, string) {
-        string = `${obj.constructor.name}::info::${string}`;
+        let caller = obj?.constructor.name;
+        if (typeof obj == "string") {
+            caller = obj;
+        }
+        string = `${caller}::info::${string}`;
         console.log(string);
         Log.Update(string);
     }
 
     static LogError(obj, string) {
-        string = `${obj.constructor.name}::error::${string}`;
+        let caller = obj?.constructor.name;
+        if (typeof obj == "string") {
+            caller = obj;
+        }
+        string = `${caller}::error::${string}`;
         console.log(string);
         Log.Update(string);
     }
