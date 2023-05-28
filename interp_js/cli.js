@@ -5,9 +5,12 @@ import { Evaluator } from "./evaluator.js";
 import * as fs from "fs";
 import * as readline from "readline";
 
-console.log("***                                                                   ***");
-console.log("***                    Monkeyscript Interpreter_JS                    ***");
-console.log("***                                                                   ***");
+console.log("\n**************************************************************************");
+console.log("***                                                                    ***");
+console.log("***                        Monkeyscript REPL JS                        ***");
+console.log("***                                                                    ***");
+console.log("**************************************************************************");
+
 const inputFile = process.argv[2];
 const args = process.argv.slice(3);
 
@@ -28,7 +31,7 @@ class Monkey {
     }
 
     loop() {
-        this.reader.question(`Monkey$ `, (command) => {
+        this.reader.question(`\nMonkey$ `, (command) => {
             this.handleCommand(command);
         });
     }
@@ -44,7 +47,11 @@ class Monkey {
                 return;
             default:
                 if (command.length > 0) {
+                    command = command.trim();
                     this.doTheMonkey(command);
+                } else {
+                    console.log("enter a valid monkeyscript string");
+                    console.log("something like 'let a = 10'");
                 }
         }
     }
@@ -64,6 +71,7 @@ class Monkey {
     }
 
     doTheMonkey(inputString, args) {
+        console.log("input: ", inputString);
         const tokenizer = new Tokenizer(inputString);
         //tokenizer.test();
         const parser = new Parser(tokenizer);
