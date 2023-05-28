@@ -6,25 +6,44 @@ class Evaluator {
     FALSE = new Boolean("false");
     NULL = new Null();
 
+    NODE_TYPE = {
+        Program: "Program",
+        LetStatement: "LetStatement",
+        ReturnStatement: "ReturnStatement",
+        ExpressionStatement: "ExpressionStatement",
+        BlockStatement: "BlockStatement",
+        Identifier: "Identifier",
+        FunctionLiteral: "FunctionLiteral",
+        IntegerLiteral: "IntegerLiteral",
+        Boolean: "Boolean",
+        IfExpression: "IfExpression",
+        CallExpression: "CallExpression",
+        PrefixExpression: "PrefixExpression",
+        InfixExpression: "InfixExpression",
+    };
+
     eval(node) {
         const nodeType = node.constructor.name;
         switch (nodeType) {
-            case "Program":
+            case this.NODE_TYPE.Program:
                 return this.evalStatements(node.statements);
-            case "ExpressionStatement":
+            case this.NODE_TYPE.ExpressionStatement:
                 return this.eval(node.expression);
-            case "IntegerLiteral":
+            case this.NODE_TYPE.IntegerLiteral:
                 return new Integer(node.value);
-            case "Boolean":
+            case this.NODE_TYPE.Boolean:
                 return this.boolNodeToBoolObject(node.value);
-            case "PrefixExpression":
-                //const right = this.eval(node.right);
+            case this.NODE_TYPE.PrefixExpression:
                 return this.evalPrefixExpression(node.operator, this.eval(node.right));
-            case "InfixExpression":
+            case this.NODE_TYPE.InfixExpression:
                 const right = this.eval(node.right);
                 const left = this.eval(node.left);
                 return this.evalInfixExpression(node.operator, left, right);
-            case "FunctionLiteral":
+            case this.NODE_TYPE.IfExpression:
+                return this.evalIfExpression(node);
+            case this.NODE_TYPE.BlockStatement:
+                return this.evalStatements(node.statements);
+            case this.NODE_TYPE.FunctionLiteral:
                 console.log("intLit: ", nodeType);
                 break;
             default:
@@ -64,7 +83,6 @@ class Evaluator {
             default:
                 return this.NULL;
         }
-        return this.NULL;
     }
 
     evalIntegerInfixExpression(operator, left, right) {
@@ -90,6 +108,29 @@ class Evaluator {
         }
     }
 
+    evalIfExpression(expression) {
+        const condition = this.eval(expression.condition);
+        if (this.isTruthy(condition)) {
+            return this.eval(expression.consequence);
+        } else if (expression.alternative) {
+            return this.eval(expression.alternative);
+        }
+        return this.NULL;
+    }
+
+    isTruthy(condition) {
+        switch (condition.value) {
+            case "null":
+                return false;
+            case "true":
+                return true;
+            case "false":
+                return false;
+            default:
+                return true;
+        }
+    }
+
     evalBangOperatorExpression(right) {
         switch (right.value) {
             case "true":
@@ -104,7 +145,7 @@ class Evaluator {
     }
 
     evalMinusPrefixOperatorExpression(right) {
-        if (right.type() != "INTEGER") return this.NULL;
+        if (right.type() != ObjectType.INTEGER_OBJ) return this.NULL;
         const value = right.value;
         return new Integer(-value);
     }
