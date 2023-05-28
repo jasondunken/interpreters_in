@@ -1,4 +1,4 @@
-import { Log } from "./cli.js";
+import { Log } from "./logger.js";
 import {
     Program,
     LetStatement,
@@ -101,13 +101,13 @@ class Parser {
             this.nextToken();
             return true;
         } else {
-            Log.LogError(this, `expect peek error! token: ${token}`);
             this.peekError(token);
             return false;
         }
     }
 
     peekError(token) {
+        Log.error(this.constructor.name, `expect peek error! token: ${token}`);
         this.errors.push(`expected next token to be ${token}, got ${this.peekToken.token}`);
     }
 

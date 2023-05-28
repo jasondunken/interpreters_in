@@ -1,5 +1,6 @@
 import { ObjectType, Integer, Boolean, Null } from "./object.js";
-import { Log } from "./cli.js";
+
+import { Log } from "./logger.js";
 
 class Evaluator {
     TRUE = new Boolean("true");
@@ -47,7 +48,7 @@ class Evaluator {
                 console.log("intLit: ", nodeType);
                 break;
             default:
-                Log.LogError(this, `unrecognized node type: ${nodeType}`);
+                Log.error(this.constructor.name, `unrecognized node type: ${nodeType}`);
                 return this.NULL;
         }
     }

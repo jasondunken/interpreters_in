@@ -1,9 +1,11 @@
+import { readFile } from "fs";
+import * as readline from "readline";
+
 import { Tokenizer } from "./tokenizer.js";
 import { Parser } from "./parser.js";
 import { Evaluator } from "./evaluator.js";
 
-import * as fs from "fs";
-import * as readline from "readline";
+import { Log } from "./logger.js";
 
 console.log("\n**************************************************************************");
 console.log("***                                                                    ***");
@@ -57,11 +59,11 @@ class Monkey {
     }
 
     loadFile(path, args) {
-        Log.LogInfo(this, `loading: ${path}`);
+        Log.info(this.constructor.name, `loading: ${path}`);
         this.loading = true;
-        fs.readFile(path, "utf8", (err, data) => {
+        readFile(path, "utf8", (err, data) => {
             if (err) {
-                Log.LogError(this, `can't read file>>>> ${err}`);
+                Log.error(this.constructor.name, `can't read file ${path} ${err}`);
             } else {
                 this.doTheMonkey(data, args);
             }
@@ -73,7 +75,6 @@ class Monkey {
     doTheMonkey(inputString, args) {
         console.log("input: ", inputString);
         const tokenizer = new Tokenizer(inputString);
-        //tokenizer.test();
         const parser = new Parser(tokenizer);
         const program = parser.parse();
         //console.log(program);
@@ -87,33 +88,3 @@ class Monkey {
 }
 
 new Monkey(inputFile, args);
-
-export class Log {
-    static LogInfo(obj, string) {
-        let caller = obj?.constructor.name;
-        if (typeof obj == "string") {
-            caller = obj;
-        }
-        string = `${caller}::info::${string}`;
-        console.log(string);
-        Log.Update(string);
-    }
-
-    static LogError(obj, string) {
-        let caller = obj?.constructor.name;
-        if (typeof obj == "string") {
-            caller = obj;
-        }
-        string = `${caller}::error::${string}`;
-        console.log(string);
-        Log.Update(string);
-    }
-
-    static Update(string) {
-        fs.existsSync("logs") || fs.mkdirSync("logs");
-        string = `${new Date().toISOString()}_${string}\n`;
-        fs.writeFile("logs/monkey-trouble.mt", string, { flag: "a+" }, (err) => {
-            if (err) throw err;
-        });
-    }
-}

@@ -1,3 +1,3 @@
 import { Evaluator } from "../evaluator.js";
 
-import { Log } from "../cli.js";
+import { Log } from "../logger.js";

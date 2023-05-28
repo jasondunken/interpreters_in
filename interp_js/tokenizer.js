@@ -148,16 +148,6 @@ class Tokenizer {
             this.readChar();
         }
     }
-
-    test() {
-        let token = this.nextToken();
-        console.log("\r");
-        console.log(token);
-        while (token.token != Tokens.EOF.token) {
-            token = this.nextToken();
-            console.log(token);
-        }
-    }
 }
 
 export { Tokenizer };
