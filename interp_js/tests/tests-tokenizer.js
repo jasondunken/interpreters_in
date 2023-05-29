@@ -20,11 +20,13 @@ export function testNextToken() {
         } else {
             return false;
         }
+
+        10 == 10;
+        10 != 9;
         
         `;
 
     const tokenizer = new Tokenizer(input);
-    let failed = 0;
 
     const tests = [
         [Tokens.LET, "let"],
@@ -99,8 +101,19 @@ export function testNextToken() {
         [Tokens.SEMICOLON, ";"],
         [Tokens.RBRACE, "}"],
 
+        [Tokens.INT, "10"],
+        [Tokens.EQ, "=="],
+        [Tokens.INT, "10"],
+        [Tokens.SEMICOLON, ";"],
+
+        [Tokens.INT, "10"],
+        [Tokens.NOT_EQ, "!="],
+        [Tokens.INT, "9"],
+        [Tokens.SEMICOLON, ";"],
+
         [Tokens.EOF, "\0"],
     ];
+    let failed = 0;
 
     for (let i = 0; i < tests.length; i++) {
         const test = tests[i];

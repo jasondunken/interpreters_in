@@ -115,7 +115,7 @@ class Parser {
         const program = new Program();
         while (!this.curTokenIs(Tokens.EOF.token)) {
             const statement = this.parseStatement();
-            console.log("parsed statement: ", statement);
+            //console.log("parsed statement: ", statement);
             if (statement) {
                 program.statements.push(statement);
             }
