@@ -341,7 +341,7 @@ class Parser {
     }
 
     parsePrefixExpression(self) {
-        const expression = new PrefixExpression(self.curToken.token, self.curToken.literal);
+        const expression = new PrefixExpression(self.curToken, self.curToken.literal);
         self.nextToken();
 
         expression.right = self.parseExpression(PRECEDENCE.PREFIX);
