@@ -502,13 +502,184 @@ function testIfExpressions() {
         if (consequence.statements[0].expression.value != expected[3]) {
             Log.error(
                 "Parser Test",
-                `test[${i}] consequence value not '${expected[2]}' got '${consequence.statements[0].expression.value}'`
+                `test[${i}] consequence value not '${expected[3]}' got '${consequence.statements[0].expression.value}'`
             );
             testFailed = true;
         }
 
         if (expression.alternative) {
             Log.error("Parser Test", `test[${i}] alternative was not null got '${expression.alternative}'`);
+            testFailed = true;
+        }
+        if (testFailed) failed++;
+    }
+    return { totalTests: tests.length, failedTests: failed };
+}
+
+function testIfElseExpressions() {
+    Log.info("Parser Test", "testing parseIfExpression() with else");
+    const input = `
+        if (x < y) { x } else { y };
+        if (a > b) { a } else { b };   
+        if (i == j) { j } else { null };   
+    `;
+
+    const tests = [
+        ["x", "<", "y", "x", "y"],
+        ["a", ">", "b", "a", "b"],
+        ["i", "==", "j", "j", "null"],
+    ];
+    let failed = 0;
+
+    const tokenizer = new Tokenizer(input);
+    const parser = new Parser(tokenizer);
+
+    const program = parser.parse();
+    if (!program) {
+        Log.error("Parser Test", "program parsing failed!");
+        return { totalTests: tests.length, failed: tests.length };
+    }
+    if (program.statements.length != tests.length) {
+        Log.error("Parser Test", "program does not contain the correct number of statements!");
+        return { totalTests: tests.length, failed: tests.length };
+    }
+
+    for (let i = 0; i < tests.length; i++) {
+        const statement = program.statements[i];
+        const expression = statement.expression;
+        const condition = expression.condition;
+        const consequence = expression.consequence;
+        const alternative = expression.alternative;
+        const expected = tests[i];
+        Log.info("Parser Test", `test[${i}] expected 'if' got '${statement.token.literal}'`);
+
+        let testFailed = false;
+        if (statement.constructor.name != "ExpressionStatement") {
+            Log.error(
+                "Parser Test",
+                `test[${i}] statement type not 'ExpressionStatement' got '${statement.constructor.name}'`
+            );
+            testFailed = true;
+        }
+
+        if (expression.constructor.name != "IfExpression") {
+            Log.error(
+                "Parser Test",
+                `test[${i}] statement type not 'IfExpression' got '${expression.constructor.name}'`
+            );
+            testFailed = true;
+        }
+
+        if (condition.left.value != expected[0]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] condition left value not '${expected[0]}' got '${condition.left.value}'`
+            );
+            testFailed = true;
+        }
+
+        if (condition.operator != expected[1]) {
+            Log.error("Parser Test", `test[${i}] condition operator not '${expected[1]}' got '${condition.operator}'`);
+            testFailed = true;
+        }
+
+        if (condition.right.value != expected[2]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] condition right value not '${expected[2]}' got '${condition.right.value}'`
+            );
+            testFailed = true;
+        }
+
+        if (consequence.statements[0].expression.value != expected[3]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] consequence value not '${expected[3]}' got '${consequence.statements[0].expression.value}'`
+            );
+            testFailed = true;
+        }
+
+        if (alternative.statements[0].expression.value != expected[4]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] alternative value not '${expected[4]}' got '${alternative.statements[0].expression.value}'`
+            );
+            testFailed = true;
+        }
+        if (testFailed) failed++;
+    }
+    return { totalTests: tests.length, failedTests: failed };
+}
+
+function testFunctionLiteralParsing() {
+    Log.info("Parser Test", "testing parseFunctionLiteral()");
+    const input = `
+        fn(x, y) { x + y; };
+        fn(a, b) { b + a * a; };  
+    `;
+
+    const tests = [
+        ["x", "y", "(x + y)"],
+        ["a", "b", "(b + (a * a))"],
+    ];
+    let failed = 0;
+
+    const tokenizer = new Tokenizer(input);
+    const parser = new Parser(tokenizer);
+
+    const program = parser.parse();
+    if (!program) {
+        Log.error("Parser Test", "program parsing failed!");
+        return { totalTests: tests.length, failed: tests.length };
+    }
+    if (program.statements.length != tests.length) {
+        Log.error("Parser Test", "program does not contain the correct number of statements!");
+        return { totalTests: tests.length, failed: tests.length };
+    }
+
+    for (let i = 0; i < tests.length; i++) {
+        const statement = program.statements[i];
+        const expression = statement.expression;
+        const expected = tests[i];
+        Log.info("Parser Test", `test[${i}] expected 'fn' got '${statement.token.literal}'`);
+
+        let testFailed = false;
+        if (statement.constructor.name != "ExpressionStatement") {
+            Log.error(
+                "Parser Test",
+                `test[${i}] statement type not 'ExpressionStatement' got '${statement.constructor.name}'`
+            );
+            testFailed = true;
+        }
+
+        if (expression.constructor.name != "FunctionLiteral") {
+            Log.error(
+                "Parser Test",
+                `test[${i}] statement type not 'FunctionLiteral' got '${expression.constructor.name}'`
+            );
+            testFailed = true;
+        }
+
+        if (expression.parameters[0].value != expected[0]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] function parameter 1 not '${expected[0]}' got '${expression.parameters[0].value}'`
+            );
+            testFailed = true;
+        }
+        if (expression.parameters[1].value != expected[1]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] function parameter 2 not '${expected[1]}' got '${expression.parameters[1].value}'`
+            );
+            testFailed = true;
+        }
+
+        if (expression.body.statements[0].toString() != expected[2]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] condition operator not '${expected[2]}' got '${expression.body.statements[0].toString()}'`
+            );
             testFailed = true;
         }
         if (testFailed) failed++;
@@ -525,4 +696,6 @@ export {
     testParsingInfixExpressions,
     testOperatorPrecedenceParsing,
     testIfExpressions,
+    testIfElseExpressions,
+    testFunctionLiteralParsing,
 };
