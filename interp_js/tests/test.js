@@ -9,6 +9,7 @@ import {
     testParsingPrefixExpressions,
     testParsingInfixExpressions,
     testOperatorPrecedenceParsing,
+    testIfExpressions,
 } from "./tests-parser.js";
 
 (function runTests() {
@@ -27,6 +28,7 @@ import {
     addResult(results, testParsingPrefixExpressions());
     addResult(results, testParsingInfixExpressions());
     addResult(results, testOperatorPrecedenceParsing());
+    addResult(results, testIfExpressions());
 
     // evaluator
 

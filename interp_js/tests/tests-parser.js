@@ -404,6 +404,8 @@ function testOperatorPrecedenceParsing() {
         ["5 > 4 == 3 < 4", "((5 > 4) == (3 < 4))"],
         ["5 < 4 != 3 > 4", "((5 < 4) != (3 > 4))"],
         ["3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"],
+        ["3 > 5 == false", "((3 > 5) == false)"],
+        ["3 < 5 == true", "((3 < 5) == true)"],
     ];
     let failed = 0;
 
@@ -414,11 +416,102 @@ function testOperatorPrecedenceParsing() {
         const result = program.toString();
 
         if (result != tests[i][1]) {
-            Log.error("ParserTest", `test[${i}] expected '${tests[i][1]}' got '${result}'`);
+            Log.error("ParserTest", `test[${i}] input '${tests[i][0]}' expected '${tests[i][1]}' got '${result}'`);
             failed++;
         } else {
-            Log.info("Parser Test", `test[${i}] expected '${tests[i][1]}' got '${result}'`);
+            Log.info("Parser Test", `test[${i}] input '${tests[i][0]}' got '${result}'`);
         }
+    }
+    return { totalTests: tests.length, failedTests: failed };
+}
+
+function testIfExpressions() {
+    Log.info("Parser Test", "testing parseIfExpression()");
+    const input = `
+        if (x < y) { x };
+        if (a > b) { a };   
+        if (i == j) { j };   
+    `;
+
+    const tests = [
+        ["x", "<", "y", "x"],
+        ["a", ">", "b", "a"],
+        ["i", "==", "j", "j"],
+    ];
+    let failed = 0;
+
+    const tokenizer = new Tokenizer(input);
+    const parser = new Parser(tokenizer);
+
+    const program = parser.parse();
+    if (!program) {
+        Log.error("Parser Test", "program parsing failed!");
+        return { totalTests: tests.length, failed: tests.length };
+    }
+    if (program.statements.length != tests.length) {
+        Log.error("Parser Test", "program does not contain the correct number of statements!");
+        return { totalTests: tests.length, failed: tests.length };
+    }
+
+    for (let i = 0; i < tests.length; i++) {
+        const statement = program.statements[i];
+        const expression = statement.expression;
+        const condition = expression.condition;
+        const consequence = expression.consequence;
+        const expected = tests[i];
+        Log.info("Parser Test", `test[${i}] expected 'if' got '${statement.token.literal}'`);
+
+        let testFailed = false;
+        if (statement.constructor.name != "ExpressionStatement") {
+            Log.error(
+                "Parser Test",
+                `test[${i}] statement type not 'ExpressionStatement' got '${statement.constructor.name}'`
+            );
+            testFailed = true;
+        }
+
+        if (expression.constructor.name != "IfExpression") {
+            Log.error(
+                "Parser Test",
+                `test[${i}] statement type not 'IfExpression' got '${expression.constructor.name}'`
+            );
+            testFailed = true;
+        }
+
+        if (condition.left.value != expected[0]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] condition left value not '${expected[0]}' got '${condition.left.value}'`
+            );
+            testFailed = true;
+        }
+
+        if (condition.operator != expected[1]) {
+            Log.error("Parser Test", `test[${i}] condition operator not '${expected[1]}' got '${condition.operator}'`);
+            testFailed = true;
+        }
+
+        if (condition.right.value != expected[2]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] condition right value not '${expected[2]}' got '${condition.right.value}'`
+            );
+            testFailed = true;
+        }
+
+        if (consequence.statements[0].expression.value != expected[3]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] consequence value not '${expected[2]}' got '${consequence.statements[0].expression.value}'`
+            );
+            testFailed = true;
+        }
+
+        if (expression.alternative) {
+            Log.error("Parser Test", `test[${i}] alternative was not null got '${expression.alternative}'`);
+            testFailed = true;
+        }
+        if (testFailed) failed++;
     }
     return { totalTests: tests.length, failedTests: failed };
 }
@@ -431,4 +524,5 @@ export {
     testParsingPrefixExpressions,
     testParsingInfixExpressions,
     testOperatorPrecedenceParsing,
+    testIfExpressions,
 };
