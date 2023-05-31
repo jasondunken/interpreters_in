@@ -406,6 +406,7 @@ function testOperatorPrecedenceParsing() {
         ["3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"],
         ["3 > 5 == false", "((3 > 5) == false)"],
         ["3 < 5 == true", "((3 < 5) == true)"],
+        ["a + add(b * c) + d", "((a + add((b * c))) + d)"],
     ];
     let failed = 0;
 
@@ -687,6 +688,81 @@ function testFunctionLiteralParsing() {
     return { totalTests: tests.length, failedTests: failed };
 }
 
+function testCallExpressionParsing() {
+    Log.info("Parser Test", "testing parseCallArguments()");
+    const input = `
+        add(1, 2 * 3, 4 + 5);
+        add(x, y + z, z * 2);  
+    `;
+
+    const tests = [
+        ["add", 1, "(2 * 3)", "(4 + 5)"],
+        ["add", "x", "(y + z)", "(z * 2)"],
+    ];
+    let failed = 0;
+
+    const tokenizer = new Tokenizer(input);
+    const parser = new Parser(tokenizer);
+
+    const program = parser.parse();
+    if (!program) {
+        Log.error("Parser Test", "program parsing failed!");
+        return { totalTests: tests.length, failed: tests.length };
+    }
+    if (program.statements.length != tests.length) {
+        Log.error("Parser Test", "program does not contain the correct number of statements!");
+        return { totalTests: tests.length, failed: tests.length };
+    }
+
+    for (let i = 0; i < tests.length; i++) {
+        const statement = program.statements[i];
+        const expression = statement.expression;
+        const expected = tests[i];
+        Log.info("Parser Test", `test[${i}] expected 'add' got '${statement.token.literal}'`);
+
+        let testFailed = false;
+        if (statement.constructor.name != "ExpressionStatement") {
+            Log.error(
+                "Parser Test",
+                `test[${i}] statement type not 'ExpressionStatement' got '${statement.constructor.name}'`
+            );
+            testFailed = true;
+        }
+
+        if (expression.constructor.name != "CallExpression") {
+            Log.error(
+                "Parser Test",
+                `test[${i}] statement type not 'CallExpression' got '${expression.constructor.name}'`
+            );
+            testFailed = true;
+        }
+
+        if (expression.arguments[0].toString() != expected[1]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] call argument 1 not '${expected[1]}' got '${expression.arguments[0]}'`
+            );
+            testFailed = true;
+        }
+        if (expression.arguments[1].toString() != expected[2]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] call argument 2 not '${expected[2]}' got '${expression.arguments[1]}'`
+            );
+            testFailed = true;
+        }
+        if (expression.arguments[2].toString() != expected[3]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] call argument 3 not '${expected[3]}' got '${expression.arguments[2]}'`
+            );
+            testFailed = true;
+        }
+        if (testFailed) failed++;
+    }
+    return { totalTests: tests.length, failedTests: failed };
+}
+
 export {
     testLetStatements,
     testReturnStatements,
@@ -698,4 +774,5 @@ export {
     testIfExpressions,
     testIfElseExpressions,
     testFunctionLiteralParsing,
+    testCallExpressionParsing,
 };

@@ -12,6 +12,7 @@ import {
     testIfExpressions,
     testIfElseExpressions,
     testFunctionLiteralParsing,
+    testCallExpressionParsing,
 } from "./tests-parser.js";
 
 (function runTests() {
@@ -33,6 +34,7 @@ import {
     addResult(results, testIfExpressions());
     addResult(results, testIfElseExpressions());
     addResult(results, testFunctionLiteralParsing());
+    addResult(results, testCallExpressionParsing());
 
     // evaluator
 
