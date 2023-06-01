@@ -11,7 +11,11 @@ function testLetStatements() {
         let foobar = 838383;    
     `;
 
-    const tests = ["x", "y", "foobar"];
+    const tests = [
+        ["x", 5],
+        ["y", 10],
+        ["foobar", 838383],
+    ];
     let failed = 0;
 
     const tokenizer = new Tokenizer(input);
@@ -46,15 +50,34 @@ function testLetStatements() {
             testFailed = true;
         }
 
-        if (statement.name.value != expected) {
-            Log.error("Parser Test", `test[${i}] statement name value not '${expected}' got '${statement.name.value}'`);
+        if (statement.name.value != expected[0]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] statement name value not '${expected[0]}' got '${statement.name.value}'`
+            );
             testFailed = true;
         }
 
-        if (statement.name.token.literal != expected) {
+        if (statement.name.token.literal != expected[0]) {
             Log.error(
                 "Parser Test",
-                `test[${i}] statement name token literal not '${expected}' got '${statement.name.token.literal}'`
+                `test[${i}] statement name token literal not '${expected[0]}' got '${statement.name.token.literal}'`
+            );
+            testFailed = true;
+        }
+
+        if (statement.value.token.literal != expected[1]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] statement value token literal not '${expected[1]}' got '${statement.value.token.literal}'`
+            );
+            testFailed = true;
+        }
+
+        if (statement.value.value != expected[1]) {
+            Log.error(
+                "Parser Test",
+                `test[${i}] statement name value value not '${expected[1]}' got '${statement.value.value}'`
             );
             testFailed = true;
         }
