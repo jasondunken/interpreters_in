@@ -7,6 +7,7 @@ const ObjectType = {
     INTEGER_OBJ: "INTEGER",
     BOOLEAN_OBJ: "BOOLEAN",
     NULL_OBJ: "NULL",
+    ERROR_OBJ: "ERROR",
 };
 
 class Integer extends Object {
@@ -53,4 +54,14 @@ class Null extends Object {
     }
 }
 
-export { ObjectType, Integer, Boolean, Null };
+class Error extends Object {
+    constructor() {
+        super();
+    }
+
+    type() {
+        return ObjectType.ERROR_OBJ;
+    }
+}
+
+export { ObjectType, Integer, Boolean, Null, Error };

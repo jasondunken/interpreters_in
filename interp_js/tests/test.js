@@ -14,6 +14,13 @@ import {
     testFunctionLiteralParsing,
     testCallExpressionParsing,
 } from "./tests-parser.js";
+import {
+    testEvalIntegerExpression,
+    testEvalBooleanExpression,
+    testEvalIfElseExpressions,
+    testEvalReturnStatements,
+    testErrorHandling,
+} from "./tests-evaluator.js";
 
 (function runTests() {
     Log.info("interp_js", "starting test suite!");
@@ -35,8 +42,12 @@ import {
     addResult(results, testIfElseExpressions());
     addResult(results, testFunctionLiteralParsing());
     addResult(results, testCallExpressionParsing());
-
     // evaluator
+    addResult(results, testEvalIntegerExpression());
+    addResult(results, testEvalBooleanExpression());
+    addResult(results, testEvalIfElseExpressions());
+    addResult(results, testEvalReturnStatements());
+    addResult(results, testErrorHandling());
 
     Log.info("interp_js", "test suite completed!");
     Log.testResult("interp_js", results.totalTests - results.failedTests, results.failedTests);

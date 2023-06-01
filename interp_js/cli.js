@@ -77,9 +77,8 @@ class Monkey {
         const tokenizer = new Tokenizer(inputString);
         const parser = new Parser(tokenizer);
         const program = parser.parse();
-        //console.log(program);
         const evaluator = new Evaluator();
-        // console.log("p.errors: ", parser.getErrors());
+        console.log("p.errors: ", parser.getErrors());
         console.log("program string: ", program.toString());
         const evaluation = evaluator.eval(program);
         console.log("evaluates to: ", evaluation);
