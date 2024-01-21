@@ -8,6 +8,7 @@ const ObjectType = {
     BOOLEAN_OBJ: "BOOLEAN",
     NULL_OBJ: "NULL",
     ERROR_OBJ: "ERROR",
+    RETURN_VALUE_OBJ: "RETURN_VALUE",
 };
 
 class Integer extends Object {
@@ -64,4 +65,19 @@ class Error extends Object {
     }
 }
 
-export { ObjectType, Integer, Boolean, Null, Error };
+class ReturnValue extends Object {
+    constructor(value) {
+        super();
+        this.value = value;
+    }
+
+    type() {
+        return ObjectType.RETURN_VALUE_OBJ;
+    }
+
+    inspect() {
+        return `${this.value}`;
+    }
+}
+
+export { ObjectType, Integer, Boolean, Null, Error, ReturnValue };
