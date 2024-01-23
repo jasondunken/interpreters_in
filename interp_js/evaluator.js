@@ -121,11 +121,11 @@ class Evaluator {
 
     isTruthy(condition) {
         switch (condition.value) {
-            case "null":
+            case null:
                 return false;
-            case "true":
+            case true:
                 return true;
-            case "false":
+            case false:
                 return false;
             default:
                 return true;
@@ -134,11 +134,11 @@ class Evaluator {
 
     evalBangOperatorExpression(right) {
         switch (right.value) {
-            case "true":
+            case true:
                 return this.FALSE;
-            case "false":
+            case false:
                 return this.TRUE;
-            case "null":
+            case null:
                 return this.TRUE;
             default:
                 return this.FALSE;

@@ -76,8 +76,27 @@ function testBooleanObject(i, obj, expected) {
     return true;
 }
 
-function testBangOperator() {
+function testEvalBangOperator() {
     Log.info("Evaluator Test", "testBangOperator()");
+    const tests = [
+        { input: "!true", expected: false },
+        { input: "!false", expected: true },
+        { input: "!5", expected: false },
+        { input: "!!true", expected: true },
+        { input: "!!false", expected: false },
+        { input: "!!5", expected: true },
+    ];
+
+    let failed = 0;
+    for (let i = 0; i < tests.length; i++) {
+        const evaluation = testEval(tests[i].input);
+        Log.info("Evaluator Test", `test[${i}] expected 'BOOLEAN' object, got '${evaluation.type()}'`);
+        if (!testBooleanObject(i, evaluation, tests[i].expected)) {
+            failed++;
+        }
+    }
+
+    return { totalTests: tests.length, failedTests: failed };
 }
 
 function testEvalIfElseExpressions() {
@@ -99,6 +118,7 @@ function testErrorHandling() {
 export {
     testEvalIntegerExpression,
     testEvalBooleanExpression,
+    testEvalBangOperator,
     testEvalIfElseExpressions,
     testEvalReturnStatements,
     testErrorHandling,

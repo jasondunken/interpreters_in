@@ -44,6 +44,7 @@ class Boolean extends Object {
 class Null extends Object {
     constructor() {
         super();
+        this.value = null;
     }
 
     type() {
