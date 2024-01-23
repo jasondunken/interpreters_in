@@ -2,6 +2,8 @@ import { Tokenizer } from "../tokenizer.js";
 import { Parser } from "../parser.js";
 import { Evaluator } from "../evaluator.js";
 
+import { ObjectType } from "../object.js";
+
 import { Log } from "../logger.js";
 
 function testEval(input) {
@@ -12,27 +14,68 @@ function testEval(input) {
     return evaluator.eval(program);
 }
 
-function testEvalIntegerExpression() {}
+function testEvalIntegerExpression() {
+    Log.info("Evaluator Test", "testEvalIntegerExpression()");
+    const tests = [
+        { input: "5", expected: 5 },
+        { input: "10", expected: 10 },
+    ];
 
-function testIntegerExpression() {}
+    let failed = 0;
+    for (let i = 0; i < tests.length; i++) {
+        let evaluation = testEval(tests[i].input);
+        Log.info("Evaluator Test", `test[${i}] expected 'INTEGER' object, got '${evaluation.type()}'`);
+        if (!testIntegerObject(i, evaluation, tests[i].expected)) {
+            failed++;
+        }
+    }
 
-function testIntegerObject(obj, expected) {}
+    return { totalTests: tests.length, failedTests: failed };
+}
 
-function testEvalBooleanExpression() {}
+function testIntegerObject(i, obj, expected) {
+    if (obj.type() != ObjectType.INTEGER_OBJ) {
+        Log.error("Evaluator Test", `test[${i}] Incorrect object type expected '${expected}' got '${obj.type()}'`);
+        return false;
+    }
+    if (obj.value != expected) {
+        Log.error("Evaluator Test", `test[${i}] Incorrect object value expected '${expected}' got '${obj.value}'`);
+        return false;
+    }
+    return true;
+}
 
-function testBooleanExpression(obj, expected) {}
+function testEvalBooleanExpression() {
+    Log.info("Evaluator Test", "testEvalBooleanExpression()");
+}
 
-function testBooleanObject(obj, expected) {}
+function testBooleanExpression(obj, expected) {
+    Log.info("Evaluator Test", "testBooleanExpression()");
+}
 
-function testBangOperator() {}
+function testBooleanObject(obj, expected) {
+    Log.info("Evaluator Test", "testBooleanObject()");
+}
 
-function testEvalIfElseExpressions() {}
+function testBangOperator() {
+    Log.info("Evaluator Test", "testBangOperator()");
+}
 
-function testNullObject(obj) {}
+function testEvalIfElseExpressions() {
+    Log.info("Evaluator Test", "testEvalIfElseExpressions()");
+}
 
-function testEvalReturnStatements() {}
+function testNullObject(obj) {
+    Log.info("Evaluator Test", "testNullObject()");
+}
 
-function testErrorHandling() {}
+function testEvalReturnStatements() {
+    Log.info("Evaluator Test", "testEvalReturnStatements()");
+}
+
+function testErrorHandling() {
+    Log.info("Evaluator Test", "testErrorHandling()");
+}
 
 export {
     testEvalIntegerExpression,
