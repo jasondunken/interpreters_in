@@ -37,7 +37,10 @@ function testEvalIntegerExpression() {
     let failed = 0;
     for (let i = 0; i < tests.length; i++) {
         let evaluation = testEval(tests[i].input);
-        Log.info("Evaluator Test", `test[${i}] expected 'INTEGER' object, got '${evaluation.type()}'`);
+        Log.info(
+            "Evaluator Test",
+            `test[${i}] input "${tests[i].input}", expected '${tests[i].expected}', got '${evaluation.value}'`
+        );
         if (!testIntegerObject(i, evaluation, tests[i].expected)) {
             failed++;
         }
@@ -48,11 +51,11 @@ function testEvalIntegerExpression() {
 
 function testIntegerObject(i, obj, expected) {
     if (obj.type() != ObjectType.INTEGER_OBJ) {
-        Log.error("Evaluator Test", `test[${i}] Incorrect object type expected '${expected}' got '${obj.type()}'`);
+        Log.error("Evaluator Test", `test[${i}] Incorrect object type, expected 'INTEGER' got '${obj.type()}'`);
         return false;
     }
     if (obj.value != expected) {
-        Log.error("Evaluator Test", `test[${i}] Incorrect object value expected '${expected}' got '${obj.value}'`);
+        Log.error("Evaluator Test", `test[${i}] Incorrect object value, expected '${expected}' got '${obj.value}'`);
         return false;
     }
     return true;
@@ -85,7 +88,10 @@ function testEvalBooleanExpression() {
     let failed = 0;
     for (let i = 0; i < tests.length; i++) {
         const evaluation = testEval(tests[i].input);
-        Log.info("Evaluator Test", `test[${i}] expected 'BOOLEAN' object, got '${evaluation.type()}'`);
+        Log.info(
+            "Evaluator Test",
+            `test[${i}] input "${tests[i].input}", expected '${tests[i].expected}', got '${evaluation.value}'`
+        );
         if (!testBooleanObject(i, evaluation, tests[i].expected)) {
             failed++;
         }
@@ -96,11 +102,11 @@ function testEvalBooleanExpression() {
 
 function testBooleanObject(i, obj, expected) {
     if (obj.type() != ObjectType.BOOLEAN_OBJ) {
-        Log.error("Evaluator Test", `test[${i}] Incorrect object type expected '${expected}' got '${obj.type()}'`);
+        Log.error("Evaluator Test", `test[${i}] Incorrect object type, expected '${expected}' got '${obj.type()}'`);
         return false;
     }
     if (obj.value != expected) {
-        Log.error("Evaluator Test", `test[${i}] Incorrect object value expected '${expected}' got '${obj.value}'`);
+        Log.error("Evaluator Test", `test[${i}] Incorrect object value, expected '${expected}' got '${obj.value}'`);
         return false;
     }
     return true;
@@ -120,7 +126,10 @@ function testEvalBangOperator() {
     let failed = 0;
     for (let i = 0; i < tests.length; i++) {
         const evaluation = testEval(tests[i].input);
-        Log.info("Evaluator Test", `test[${i}] expected 'BOOLEAN' object, got '${evaluation.type()}'`);
+        Log.info(
+            "Evaluator Test",
+            `test[${i}] input "${tests[i].input}", expected '${tests[i].expected}', got '${evaluation.value}'`
+        );
         if (!testBooleanObject(i, evaluation, tests[i].expected)) {
             failed++;
         }
@@ -131,10 +140,43 @@ function testEvalBangOperator() {
 
 function testEvalIfElseExpressions() {
     Log.info("Evaluator Test", "testEvalIfElseExpressions()");
+    const tests = [
+        { input: "if (true) { 10 }", expected: 10 },
+        { input: "if (false) { 10 }", expected: null },
+        { input: "if (1) { 10 }", expected: 10 },
+        { input: "if (1 < 2) { 10 }", expected: 10 },
+        { input: "if (1 > 2) { 10 }", expected: null },
+        { input: "if (1 > 2) { 10 } else { 20 }", expected: 20 },
+        { input: "if (1 < 2) { 10 } else { 20 }", expected: 10 },
+    ];
+
+    let failed = 0;
+    for (let i = 0; i < tests.length; i++) {
+        const evaluation = testEval(tests[i].input);
+        Log.info(
+            "Evaluator Test",
+            `test[${i}] input "${tests[i].input}", expected '${tests[i].expected}', got '${evaluation.value}'`
+        );
+        if (tests[i].expected != null) {
+            if (!testIntegerObject(i, evaluation, tests[i].expected)) {
+                failed++;
+            }
+        } else {
+            if (!testNullObject(i, evaluation)) {
+                failed++;
+            }
+        }
+    }
+
+    return { totalTests: tests.length, failedTests: failed };
 }
 
-function testNullObject(obj) {
-    Log.info("Evaluator Test", "testNullObject()");
+function testNullObject(i, obj) {
+    if (obj.type() != ObjectType.NULL_OBJ) {
+        Log.error("Evaluator Test", `test[${i}] expected 'NULL' object, got '${obj.type()}'`);
+        return false;
+    }
+    return true;
 }
 
 function testEvalReturnStatements() {

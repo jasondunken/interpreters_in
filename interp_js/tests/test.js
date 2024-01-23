@@ -47,7 +47,7 @@ import {
     addResult(results, testEvalIntegerExpression());
     addResult(results, testEvalBooleanExpression());
     addResult(results, testEvalBangOperator());
-    // addResult(results, testEvalIfElseExpressions());
+    addResult(results, testEvalIfElseExpressions());
     // addResult(results, testEvalReturnStatements());
     // addResult(results, testErrorHandling());
 
