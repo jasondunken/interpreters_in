@@ -44,7 +44,7 @@ import {
     addResult(results, testCallExpressionParsing());
     // evaluator
     addResult(results, testEvalIntegerExpression());
-    // addResult(results, testEvalBooleanExpression());
+    addResult(results, testEvalBooleanExpression());
     // addResult(results, testEvalIfElseExpressions());
     // addResult(results, testEvalReturnStatements());
     // addResult(results, testErrorHandling());

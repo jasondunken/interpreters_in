@@ -47,14 +47,33 @@ function testIntegerObject(i, obj, expected) {
 
 function testEvalBooleanExpression() {
     Log.info("Evaluator Test", "testEvalBooleanExpression()");
+    const tests = [
+        { input: "true", expected: true },
+        { input: "false", expected: false },
+    ];
+
+    let failed = 0;
+    for (let i = 0; i < tests.length; i++) {
+        const evaluation = testEval(tests[i].input);
+        Log.info("Evaluator Test", `test[${i}] expected 'BOOLEAN' object, got '${evaluation.type()}'`);
+        if (!testBooleanObject(i, evaluation, tests[i].expected)) {
+            failed++;
+        }
+    }
+
+    return { totalTests: tests.length, failedTests: failed };
 }
 
-function testBooleanExpression(obj, expected) {
-    Log.info("Evaluator Test", "testBooleanExpression()");
-}
-
-function testBooleanObject(obj, expected) {
-    Log.info("Evaluator Test", "testBooleanObject()");
+function testBooleanObject(i, obj, expected) {
+    if (obj.type() != ObjectType.BOOLEAN_OBJ) {
+        Log.error("Evaluator Test", `test[${i}] Incorrect object type expected '${expected}' got '${obj.type()}'`);
+        return false;
+    }
+    if (obj.value != expected) {
+        Log.error("Evaluator Test", `test[${i}] Incorrect object value expected '${expected}' got '${obj.value}'`);
+        return false;
+    }
+    return true;
 }
 
 function testBangOperator() {

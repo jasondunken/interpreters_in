@@ -3,8 +3,8 @@ import { ObjectType, Integer, Boolean, Null } from "./object.js";
 import { Log } from "./logger.js";
 
 class Evaluator {
-    TRUE = new Boolean("true");
-    FALSE = new Boolean("false");
+    TRUE = new Boolean(true);
+    FALSE = new Boolean(false);
     NULL = new Null();
 
     NODE_TYPE = {
