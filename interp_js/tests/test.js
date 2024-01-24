@@ -48,7 +48,7 @@ import {
     addResult(results, testEvalBooleanExpression());
     addResult(results, testEvalBangOperator());
     addResult(results, testEvalIfElseExpressions());
-    // addResult(results, testEvalReturnStatements());
+    addResult(results, testEvalReturnStatements());
     // addResult(results, testErrorHandling());
 
     Log.info("interp_js", "test suite completed!");

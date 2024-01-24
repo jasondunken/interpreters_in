@@ -56,6 +56,21 @@ class Null extends Object {
     }
 }
 
+class ReturnValue extends Object {
+    constructor(value) {
+        super();
+        this.returnValue = value;
+    }
+
+    type() {
+        return ObjectType.RETURN_VALUE_OBJ;
+    }
+
+    inspect() {
+        return `${this.returnValue}`;
+    }
+}
+
 class Error extends Object {
     constructor() {
         super();
@@ -66,19 +81,4 @@ class Error extends Object {
     }
 }
 
-class ReturnValue extends Object {
-    constructor(value) {
-        super();
-        this.value = value;
-    }
-
-    type() {
-        return ObjectType.RETURN_VALUE_OBJ;
-    }
-
-    inspect() {
-        return `${this.value}`;
-    }
-}
-
-export { ObjectType, Integer, Boolean, Null, Error, ReturnValue };
+export { ObjectType, Integer, Boolean, Null, ReturnValue, Error };

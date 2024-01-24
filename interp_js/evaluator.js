@@ -1,4 +1,4 @@
-import { ObjectType, Integer, Boolean, Null } from "./object.js";
+import { ObjectType, Integer, Boolean, ReturnValue, Null, Error } from "./object.js";
 
 import { Log } from "./logger.js";
 
@@ -27,7 +27,7 @@ class Evaluator {
         const nodeType = node.constructor.name;
         switch (nodeType) {
             case this.NODE_TYPE.Program:
-                return this.evalStatements(node.statements);
+                return this.evalProgram(node.statements);
             case this.NODE_TYPE.ExpressionStatement:
                 return this.eval(node.expression);
             case this.NODE_TYPE.IntegerLiteral:
@@ -43,20 +43,40 @@ class Evaluator {
             case this.NODE_TYPE.IfExpression:
                 return this.evalIfExpression(node);
             case this.NODE_TYPE.BlockStatement:
-                return this.evalStatements(node.statements);
+                return this.evalBlockStatement(node);
             case this.NODE_TYPE.FunctionLiteral:
                 console.log("intLit: ", nodeType);
                 break;
+            case this.NODE_TYPE.ReturnStatement:
+                const val = this.eval(node.returnValue);
+                return new ReturnValue(val);
             default:
                 Log.error(this.constructor.name, `unrecognized node type: ${nodeType}`);
                 return this.NULL;
         }
     }
 
-    evalStatements(statements) {
+    evalProgram(statements) {
         let result; // Object
         for (let statement of statements) {
             result = this.eval(statement);
+
+            if (result.type() == ObjectType.RETURN_VALUE_OBJ) {
+                return result.returnValue;
+            }
+        }
+        return result;
+    }
+
+    evalBlockStatement(node) {
+        let result;
+
+        for (let statement of node.statements) {
+            result = this.eval(statement);
+
+            if (result != null && result.type() == ObjectType.RETURN_VALUE_OBJ) {
+                return result;
+            }
         }
         return result;
     }

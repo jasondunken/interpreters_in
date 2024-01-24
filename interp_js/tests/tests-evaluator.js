@@ -181,6 +181,27 @@ function testNullObject(i, obj) {
 
 function testEvalReturnStatements() {
     Log.info("Evaluator Test", "testEvalReturnStatements()");
+    const tests = [
+        { input: "return 10;", expected: 10 },
+        { input: "return 10; 9;", expected: 10 },
+        { input: "return 2 * 5; 9;", expected: 10 },
+        { input: "9; return 2 * 5; 9;", expected: 10 },
+        { input: "if (10 > 1) { if (10 > 1) { return 10; } return 1; }", expected: 10 },
+    ];
+
+    let failed = 0;
+    for (let i = 0; i < tests.length; i++) {
+        const evaluation = testEval(tests[i].input);
+        Log.info(
+            "Evaluator Test",
+            `test[${i}] input "${tests[i].input}", expected '${tests[i].expected}', got '${evaluation.value}'`
+        );
+        if (!testIntegerObject(i, evaluation, tests[i].expected)) {
+            failed++;
+        }
+    }
+
+    return { totalTests: tests.length, failedTests: failed };
 }
 
 function testErrorHandling() {
