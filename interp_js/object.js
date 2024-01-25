@@ -7,8 +7,8 @@ const ObjectType = {
     INTEGER_OBJ: "INTEGER",
     BOOLEAN_OBJ: "BOOLEAN",
     NULL_OBJ: "NULL",
-    ERROR_OBJ: "ERROR",
     RETURN_VALUE_OBJ: "RETURN_VALUE",
+    ERROR_OBJ: "ERROR",
 };
 
 class Integer extends Object {
@@ -72,12 +72,17 @@ class ReturnValue extends Object {
 }
 
 class Error extends Object {
-    constructor() {
+    constructor(message) {
         super();
+        this.message = message;
     }
 
     type() {
         return ObjectType.ERROR_OBJ;
+    }
+
+    string() {
+        return `ERROR: ${this.message}`;
     }
 }
 

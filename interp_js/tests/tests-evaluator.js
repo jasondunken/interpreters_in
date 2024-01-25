@@ -206,6 +206,40 @@ function testEvalReturnStatements() {
 
 function testErrorHandling() {
     Log.info("Evaluator Test", "testErrorHandling()");
+    const tests = [
+        { input: "5 + true;", expected: "type mismatch: INTEGER + BOOLEAN" },
+        { input: "5 + true; 5;", expected: "type mismatch: INTEGER + BOOLEAN" },
+        { input: "-true", expected: "unknown operator: -BOOLEAN" },
+        { input: "true + false;", expected: "unknown operator: BOOLEAN + BOOLEAN" },
+        { input: "5; true + false; 5;", expected: "unknown operator: BOOLEAN + BOOLEAN" },
+        { input: "if (10 > 1) { true + false; }", expected: "unknown operator: BOOLEAN + BOOLEAN" },
+        {
+            input: "if (10 > 1) { if (10 > 1) { return true + false; } return 1; }",
+            expected: "unknown operator: BOOLEAN + BOOLEAN",
+        },
+    ];
+
+    let failed = 0;
+    for (let i = 0; i < tests.length; i++) {
+        const evaluation = testEval(tests[i].input);
+        Log.info(
+            "Evaluator Test",
+            `test[${i}] input "${tests[i].input}", expected '${tests[i].expected}', got '${evaluation.message}'`
+        );
+        if (evaluation.type() != ObjectType.ERROR_OBJ) {
+            Log.error("Evaluator Test", `test[${i}] expected 'ERROR' object, got '${evaluation.type()}'`);
+            failed++;
+        }
+        if (evaluation.message != tests[i].expected) {
+            Log.error(
+                "Evaluator Test",
+                `test[${i}] expected '${tests[i].expected}' message, got '${evaluation.message}'`
+            );
+            failed++;
+        }
+    }
+
+    return { totalTests: tests.length, failedTests: failed };
 }
 
 export {
