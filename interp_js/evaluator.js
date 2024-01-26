@@ -58,11 +58,20 @@ class Evaluator {
                 console.log("intLit: ", nodeType);
                 break;
             case this.NODE_TYPE.ReturnStatement:
-                const val = this.eval(node.returnValue, env);
-                if (this.isError(val)) {
-                    return val;
+                const returnVal = this.eval(node.returnValue, env);
+                if (this.isError(returnVal)) {
+                    return returnVal;
                 }
-                return new ReturnValue(val);
+                return new ReturnValue(returnVal);
+            case this.NODE_TYPE.LetStatement:
+                const letVal = this.eval(node.value, env);
+                if (this.isError(letVal)) {
+                    return letVal;
+                }
+                env.set(node.name.value, letVal);
+                return letVal;
+            case this.NODE_TYPE.Identifier:
+                return this.evalIdentifier(node, env);
             default:
                 Log.error(this.constructor.name, `unrecognized node type: ${nodeType}`);
                 return this.NULL;
@@ -200,6 +209,14 @@ class Evaluator {
 
     boolNodeToBoolObject(value) {
         return value ? this.TRUE : this.FALSE;
+    }
+
+    evalIdentifier(node, env) {
+        const val = env.get(node.value);
+        if (!val) {
+            return this.newError(`identifier not found: ${node.value}`);
+        }
+        return val;
     }
 
     newError(message) {
