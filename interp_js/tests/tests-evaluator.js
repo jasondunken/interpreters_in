@@ -5,13 +5,15 @@ import { Evaluator } from "../evaluator.js";
 import { ObjectType } from "../object.js";
 
 import { Log } from "../logger.js";
+import { Environment } from "../environment.js";
 
 function testEval(input) {
     const tokenizer = new Tokenizer(input);
     const parser = new Parser(tokenizer);
     const program = parser.parse();
     const evaluator = new Evaluator();
-    return evaluator.eval(program);
+    const environment = new Environment();
+    return evaluator.eval(program, environment);
 }
 
 function testEvalIntegerExpression() {
@@ -217,6 +219,7 @@ function testErrorHandling() {
             input: "if (10 > 1) { if (10 > 1) { return true + false; } return 1; }",
             expected: "unknown operator: BOOLEAN + BOOLEAN",
         },
+        { input: "foobar", expected: "identifier not found: foobar" },
     ];
 
     let failed = 0;
@@ -242,6 +245,30 @@ function testErrorHandling() {
     return { totalTests: tests.length, failedTests: failed };
 }
 
+function testEvalLetStatements() {
+    Log.info("Evaluator Test", "testLetStatements()");
+    const tests = [
+        { input: "let a = 5; a;", expected: 5 },
+        { input: "let a = 5 * 5; a;", expected: 25 },
+        { input: "let a = 5; let b = a; b;", expected: 5 },
+        { input: "let a = 5; let b = a; let c = a + b + 5; c;", expected: 15 },
+    ];
+
+    let failed = 0;
+    for (let i = 0; i < tests.length; i++) {
+        const evaluation = testEval(tests[i].input);
+        Log.info(
+            "Evaluator Test",
+            `test[${i}] input "${tests[i].input}", expected '${tests[i].expected}', got '${evaluation.value}'`
+        );
+        if (!testIntegerObject(i, evaluation, tests[i].expected)) {
+            failed++;
+        }
+    }
+
+    return { totalTests: tests.length, failedTests: failed };
+}
+
 export {
     testEvalIntegerExpression,
     testEvalBooleanExpression,
@@ -249,4 +276,5 @@ export {
     testEvalIfElseExpressions,
     testEvalReturnStatements,
     testErrorHandling,
+    testEvalLetStatements,
 };
