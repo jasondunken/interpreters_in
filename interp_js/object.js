@@ -9,6 +9,7 @@ const ObjectType = {
     NULL_OBJ: "NULL",
     RETURN_VALUE_OBJ: "RETURN_VALUE",
     ERROR_OBJ: "ERROR",
+    FUNCTION_OBJ: "FUNCTION",
 };
 
 class Integer extends Object {
@@ -86,4 +87,21 @@ class Error extends Object {
     }
 }
 
-export { ObjectType, Integer, Boolean, Null, ReturnValue, Error };
+class Function extends Object {
+    constructor(parameters, body, env) {
+        this.parameters = parameters;
+        this.body = body;
+        this.env = env;
+    }
+
+    type() {
+        return ObjectType.FUNCTION_OBJ;
+    }
+
+    inspect() {
+        const p = this.parameters.map((p) => p.string());
+        return `fn(${p.join(", ")}) {\n${this.body.string()}\n}`;
+    }
+}
+
+export { ObjectType, Integer, Boolean, Null, ReturnValue, Error, Function };
