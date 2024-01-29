@@ -269,6 +269,38 @@ function testEvalLetStatements() {
     return { totalTests: tests.length, failedTests: failed };
 }
 
+function testEvalFunctionObject() {
+    Log.info("Evaluator Test", "testEvalFunctionObject()");
+    const input = "fn(x) { x + 2; };";
+    const expectedParams = ["x"];
+    const expectedBody = "(x + 2)";
+
+    const evaluation = testEval(input);
+    Log.info("Evaluator Test", `test[0] input "${input}", expected 'FUNCTION', got '${evaluation.type()}'`);
+    let failed = false;
+    if (evaluation.type() == ObjectType.ERROR_OBJ) {
+        Log.error("Evaluator Test", `test[0] expected 'FUNCTION' message, got '${evaluation.type()}'`);
+        failed = true;
+    }
+    if (evaluation.parameters.length != 1) {
+        Log.error("Evaluator Test", `test[0] function has wrong parameters, got '${evaluation.parameters}'`);
+        failed = true;
+    }
+    if (evaluation.parameters[0].value != expectedParams[0]) {
+        Log.error("Evaluator Test", `test[0] wrong parameter, expected 'x', got '${evaluation.parameters[0]}'`);
+        failed = true;
+    }
+    if (evaluation.body != expectedBody) {
+        Log.error(
+            "Evaluator Test",
+            `test[0] wrong function body, expected '${expectedBody}', got '${evaluation.parameters[0]}'`
+        );
+        failed = true;
+    }
+    if (failed) failed = 1;
+    return { totalTests: 1, failedTests: failed };
+}
+
 export {
     testEvalIntegerExpression,
     testEvalBooleanExpression,
@@ -277,4 +309,5 @@ export {
     testEvalReturnStatements,
     testErrorHandling,
     testEvalLetStatements,
+    testEvalFunctionObject,
 };

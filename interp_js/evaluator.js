@@ -1,4 +1,4 @@
-import { ObjectType, Integer, Boolean, ReturnValue, Null, Error } from "./object.js";
+import { ObjectType, Integer, Boolean, ReturnValue, Null, Error, FunctionObj } from "./object.js";
 
 import { Log } from "./logger.js";
 
@@ -55,8 +55,7 @@ class Evaluator {
             case this.NODE_TYPE.BlockStatement:
                 return this.evalBlockStatement(node, env);
             case this.NODE_TYPE.FunctionLiteral:
-                console.log("intLit: ", nodeType);
-                break;
+                return new FunctionObj(node, env);
             case this.NODE_TYPE.ReturnStatement:
                 const returnVal = this.eval(node.returnValue, env);
                 if (this.isError(returnVal)) {

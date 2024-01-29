@@ -22,6 +22,7 @@ import {
     testEvalReturnStatements,
     testErrorHandling,
     testEvalLetStatements,
+    testEvalFunctionObject,
 } from "./tests-evaluator.js";
 
 (function runTests() {
@@ -52,6 +53,7 @@ import {
     addResult(results, testEvalReturnStatements());
     addResult(results, testErrorHandling());
     addResult(results, testEvalLetStatements());
+    addResult(results, testEvalFunctionObject());
 
     Log.info("interp_js", "test suite completed!");
     Log.testResult("interp_js", results.totalTests - results.failedTests, results.failedTests);

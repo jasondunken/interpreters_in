@@ -87,10 +87,11 @@ class Error extends Object {
     }
 }
 
-class Function extends Object {
-    constructor(parameters, body, env) {
-        this.parameters = parameters;
-        this.body = body;
+class FunctionObj extends Object {
+    constructor(node, env) {
+        super();
+        this.parameters = node.parameters;
+        this.body = node.body.toString();
         this.env = env;
     }
 
@@ -104,4 +105,4 @@ class Function extends Object {
     }
 }
 
-export { ObjectType, Integer, Boolean, Null, ReturnValue, Error, Function };
+export { ObjectType, Integer, Boolean, Null, ReturnValue, Error, FunctionObj };
