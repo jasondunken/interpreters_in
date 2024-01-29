@@ -301,6 +301,32 @@ function testEvalFunctionObject() {
     return { totalTests: 1, failedTests: failed };
 }
 
+function testEvalFunctionApplication() {
+    Log.info("Evaluator Test", "testEvalFunctionApplication()");
+    const tests = [
+        { input: "let identity = fn(x) { x; }; identity(5);", expected: 5 },
+        { input: "let identity = fn(x) { return x; }; identity(5);", expected: 5 },
+        { input: "let double = fn(x) { return x * 2; }; double(5);", expected: 10 },
+        { input: "let add = fn(x, y) { return x + y; }; add(5, 5);", expected: 10 },
+        { input: "let add = fn(x, y) { return x + y; }; add(5 + 5 , add(5 + 5));", expected: 20 },
+        { input: "fn(x) { x; }(5)", expected: 5 },
+    ];
+
+    let failed = 0;
+    for (let i = 0; i < tests.length; i++) {
+        const evaluation = testEval(tests[i].input);
+        Log.info(
+            "Evaluator Test",
+            `test[${i}] input "${tests[i].input}", expected '${tests[i].expected}', got '${evaluation.value}'`
+        );
+        if (!testIntegerObject(i, evaluation, tests[i].expected)) {
+            failed++;
+        }
+    }
+
+    return { totalTests: tests.length, failedTests: failed };
+}
+
 export {
     testEvalIntegerExpression,
     testEvalBooleanExpression,
@@ -310,4 +336,5 @@ export {
     testErrorHandling,
     testEvalLetStatements,
     testEvalFunctionObject,
+    testEvalFunctionApplication,
 };
