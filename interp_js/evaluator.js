@@ -1,6 +1,7 @@
 import { ObjectType, Integer, Boolean, ReturnValue, Null, Error, FunctionObj } from "./object.js";
 
 import { Log } from "./logger.js";
+import { Environment } from "./environment.js";
 
 class Evaluator {
     TRUE = new Boolean(true);
@@ -25,10 +26,13 @@ class Evaluator {
 
     eval(node, env) {
         const nodeType = node.constructor.name;
+        console.log("evaluating ", nodeType);
+        console.log("env: ", env);
         switch (nodeType) {
             case this.NODE_TYPE.Program:
                 return this.evalProgram(node.statements, env);
             case this.NODE_TYPE.ExpressionStatement:
+                console.log("evalExpressionStatement: ", node);
                 return this.eval(node.expression, env);
             case this.NODE_TYPE.IntegerLiteral:
                 return new Integer(node.value);
@@ -55,7 +59,20 @@ class Evaluator {
             case this.NODE_TYPE.BlockStatement:
                 return this.evalBlockStatement(node, env);
             case this.NODE_TYPE.FunctionLiteral:
+                console.log("evalFunctionLiteral: ", node);
                 return new FunctionObj(node, env);
+            case this.NODE_TYPE.CallExpression:
+                console.log("callExpression, node: ", node);
+                const func = this.eval(node.func, env);
+                if (this.isError(func)) {
+                    return func;
+                }
+                const args = this.evalExpressions(node.arguments, env);
+                console.log("callExpression, args: ", args);
+                if (args.length == 1 && this.isError(args[0])) {
+                    return args[0];
+                }
+                return this.applyFunction(func, args);
             case this.NODE_TYPE.ReturnStatement:
                 const returnVal = this.eval(node.returnValue, env);
                 if (this.isError(returnVal)) {
@@ -70,6 +87,7 @@ class Evaluator {
                 env.set(node.name.value, letVal);
                 return letVal;
             case this.NODE_TYPE.Identifier:
+                console.log("evalIdent: ", node);
                 return this.evalIdentifier(node, env);
             default:
                 Log.error(this.constructor.name, `unrecognized node type: ${nodeType}`);
@@ -204,6 +222,50 @@ class Evaluator {
         }
         const value = right.value;
         return new Integer(-value);
+    }
+
+    evalExpressions(exps, env) {
+        const result = [];
+        for (const exp of exps) {
+            const evaluated = this.eval(exp, env);
+            if (this.isError(evaluated)) {
+                return [evaluated];
+            }
+            result.push(evaluated);
+        }
+        return result;
+    }
+
+    applyFunction(func, args) {
+        if (func.type() !== ObjectType.FUNCTION_OBJ) {
+            return this.newError(`not a function ${func.type()}`);
+        }
+
+        const extendedEnv = this.extendFunctionEnv(func, args);
+        console.log("applyFunction, func: ", func);
+        console.log("applyFunction, args: ", args);
+        console.log("applyFunction, eEnv: ", extendedEnv);
+        const evaluated = this.eval(func.body, extendedEnv);
+        console.log("applyFunction eval: ", evaluated);
+        return this.unwrapReturnValue(evaluated);
+    }
+
+    extendFunctionEnv(func, args) {
+        console.log("extendEnv, args: ", args);
+        const env = Environment.newEnclosedEnvironment(func.env);
+        for (let i = 0; i < args.length; i++) {
+            const param = args[i];
+            env.set(param.value, args[i]);
+        }
+        return env;
+    }
+
+    unwrapReturnValue(obj) {
+        console.log("unwrap: ", obj);
+        if (obj.type() === ObjectType.RETURN_VALUE_OBJ) {
+            return obj.returnValue;
+        }
+        return obj;
     }
 
     boolNodeToBoolObject(value) {
