@@ -88,10 +88,10 @@ class Error extends Object {
 }
 
 class FunctionObj extends Object {
-    constructor(node, env) {
+    constructor(params, body, env) {
         super();
-        this.parameters = node.parameters;
-        this.body = node.body.toString();
+        this.parameters = params;
+        this.body = body;
         this.env = env;
     }
 
