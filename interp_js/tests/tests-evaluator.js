@@ -310,6 +310,8 @@ function testEvalFunctionApplication() {
         { input: "let add = fn(x, y) { return x + y; }; add(5, 5);", expected: 10 },
         { input: "let add = fn(x, y) { return x + y; }; add(5 + 5 , add(5, 5));", expected: 20 },
         { input: "fn(x) { x; }(5)", expected: 5 },
+        // test closures
+        { input: "let newAdder = fn(x) { fn(y) { x + y }; }; let addTwo = newAdder(2); addTwo(2);", expected: 4 },
     ];
 
     let failed = 0;
