@@ -26,6 +26,7 @@ class Evaluator {
 
     eval(node, env) {
         const nodeType = node.constructor.name;
+        // console.log("eval ", nodeType);
         switch (nodeType) {
             case this.NODE_TYPE.Program:
                 return this.evalProgram(node.statements, env);
@@ -60,6 +61,7 @@ class Evaluator {
                 const body = node.body;
                 return new FunctionObj(params, body, env);
             case this.NODE_TYPE.CallExpression:
+                // this.inspectNode(node);
                 const func = this.eval(node.func, env);
                 if (this.isError(func)) {
                     return func;
@@ -237,16 +239,14 @@ class Evaluator {
         }
 
         const extendedEnv = this.extendFunctionEnv(func, args);
-        console.log("applyFunction, eEnv: ", extendedEnv);
         const evaluated = this.eval(func.body, extendedEnv);
         return this.unwrapReturnValue(evaluated);
     }
 
     extendFunctionEnv(func, args) {
-        console.log("extendEnv, args: ", args);
         const env = Environment.newEnclosedEnvironment(func.env);
-        for (let i = 0; i < args.length; i++) {
-            const param = args[i];
+        for (let i = 0; i < func.parameters.length; i++) {
+            const param = func.parameters[i];
             env.set(param.value, args[i]);
         }
         return env;
@@ -280,6 +280,19 @@ class Evaluator {
             return obj.type() == ObjectType.ERROR_OBJ;
         }
         return false;
+    }
+
+    inspectNode(node, env) {
+        console.log("\ninspect node ---------------------------------------------------------");
+        console.log("node:");
+        console.log(node);
+        if (node.func) {
+            console.log("func:");
+            console.log(node.func);
+        }
+        console.log("env:");
+        console.log(env);
+        console.log("end inspect ----------------------------------------------------------\n");
     }
 }
 
