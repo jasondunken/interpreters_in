@@ -36,9 +36,8 @@ const Tokens = {
     LBRACE: { token: "LBRACE", literal: "{" },
     RBRACE: { token: "RBRACE", literal: "}" },
 
-    // identifiers & literals
+    // identifiers
     IDENT: { token: "IDENT", literal: "" },
-    INT: { token: "INT", literal: "" },
 
     // keywords
     FUNCTION: { token: "FUNCTION", literal: "FUNCTION" },
@@ -52,6 +51,10 @@ const Tokens = {
     // other
     ILLEGAL: { token: "ILLEGAL", literal: "" },
     EOF: { token: "EOF", literal: "\0" },
+
+    // data types and functions
+    INT: { token: "INT", literal: "" },
+    STRING: { token: "STRING", literal: "" },
 };
 
 const Keywords = {

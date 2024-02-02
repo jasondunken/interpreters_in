@@ -96,6 +96,10 @@ class Tokenizer {
             case Tokens.EOF.literal:
                 token = new Token(Tokens.EOF.token, "\0");
                 break;
+            case '"':
+                token.token = Tokens.STRING.token;
+                token.literal = this.readString();
+                break;
             default:
                 if (this.isLetter(this.ch)) {
                     token.literal = this.readIdentifier();
@@ -114,6 +118,17 @@ class Tokenizer {
         }
         this.readChar();
         return token;
+    }
+
+    readString() {
+        let pos = this.position + 1;
+        while (true) {
+            this.readChar();
+            if (this.ch === '"' || this.ch === 0) {
+                break;
+            }
+        }
+        return this.input.slice(pos, this.position);
     }
 
     readIdentifier() {

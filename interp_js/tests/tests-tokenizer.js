@@ -23,6 +23,9 @@ export function testNextToken() {
 
         10 == 10;
         10 != 9;
+
+        "foobar"
+        "foo bar"
         
         `;
 
@@ -110,6 +113,9 @@ export function testNextToken() {
         [Tokens.NOT_EQ, "!="],
         [Tokens.INT, "9"],
         [Tokens.SEMICOLON, ";"],
+
+        [Tokens.STRING, "foobar"],
+        [Tokens.STRING, "foo bar"],
 
         [Tokens.EOF, "\0"],
     ];
