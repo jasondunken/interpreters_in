@@ -16,21 +16,13 @@ function testLetStatements() {
         ["y", 10],
         ["foobar", 838383],
     ];
+
+    const program = parseProgram(input);
+    if (!programParsingSuccessful(program, tests.length)) {
+        return { totalTests: tests.length, failed: tests.length };
+    }
+
     let failed = 0;
-
-    const tokenizer = new Tokenizer(input);
-    const parser = new Parser(tokenizer);
-
-    const program = parser.parse();
-    if (!program) {
-        Log.error("Parser Test", "program parsing failed!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-    if (program.statements.length != tests.length) {
-        Log.error("Parser Test", "program does not contain the correct number of statements!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-
     for (let i = 0; i < tests.length; i++) {
         const statement = program.statements[i];
         const expected = tests[i];
@@ -95,21 +87,13 @@ function testReturnStatements() {
     `;
 
     const tests = [5, 10, 993322];
+
+    const program = parseProgram(input);
+    if (!programParsingSuccessful(program, tests.length)) {
+        return { totalTests: tests.length, failed: tests.length };
+    }
+
     let failed = 0;
-
-    const tokenizer = new Tokenizer(input);
-    const parser = new Parser(tokenizer);
-
-    const program = parser.parse();
-    if (!program) {
-        Log.error("Parser Test", "program parsing failed!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-    if (program.statements.length != tests.length) {
-        Log.error("Parser Test", "program does not contain the correct number of statements!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-
     for (let i = 0; i < tests.length; i++) {
         const statement = program.statements[i];
         Log.info("Parser Test", `test[${i}] expected 'return' got '${statement.token.literal}'`);
@@ -152,21 +136,13 @@ function testIdentifierExpressions() {
     `;
 
     const tests = ["foobar", "test", "x", "a", "this"];
+
+    const program = parseProgram(input);
+    if (!programParsingSuccessful(program, tests.length)) {
+        return { totalTests: tests.length, failed: tests.length };
+    }
+
     let failed = 0;
-
-    const tokenizer = new Tokenizer(input);
-    const parser = new Parser(tokenizer);
-
-    const program = parser.parse();
-    if (!program) {
-        Log.error("Parser Test", "program parsing failed!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-    if (program.statements.length != tests.length) {
-        Log.error("Parser Test", "program does not contain the correct number of statements!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-
     for (let i = 0; i < tests.length; i++) {
         const statement = program.statements[i];
         const expression = statement.expression;
@@ -212,21 +188,13 @@ function testIntegerLiteralExpressions() {
     `;
 
     const tests = [5, 10, 999];
+
+    const program = parseProgram(input);
+    if (!programParsingSuccessful(program, tests.length)) {
+        return { totalTests: tests.length, failed: tests.length };
+    }
+
     let failed = 0;
-
-    const tokenizer = new Tokenizer(input);
-    const parser = new Parser(tokenizer);
-
-    const program = parser.parse();
-    if (!program) {
-        Log.error("Parser Test", "program parsing failed!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-    if (program.statements.length != tests.length) {
-        Log.error("Parser Test", "program does not contain the correct number of statements!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-
     for (let i = 0; i < tests.length; i++) {
         const statement = program.statements[i];
         const expression = statement.expression;
@@ -274,21 +242,13 @@ function testParsingPrefixExpressions() {
         ["-", 5],
         ["!", 10],
     ];
+
+    const program = parseProgram(input);
+    if (!programParsingSuccessful(program, tests.length)) {
+        return { totalTests: tests.length, failed: tests.length };
+    }
+
     let failed = 0;
-
-    const tokenizer = new Tokenizer(input);
-    const parser = new Parser(tokenizer);
-
-    const program = parser.parse();
-    if (!program) {
-        Log.error("Parser Test", "program parsing failed!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-    if (program.statements.length != tests.length) {
-        Log.error("Parser Test", "program does not contain the correct number of statements!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-
     for (let i = 0; i < tests.length; i++) {
         const statement = program.statements[i];
         const expression = statement.expression;
@@ -351,21 +311,13 @@ function testParsingInfixExpressions() {
         [5, "==", 5],
         [5, "!=", 5],
     ];
+
+    const program = parseProgram(input);
+    if (!programParsingSuccessful(program, tests.length)) {
+        return { totalTests: tests.length, failed: tests.length };
+    }
+
     let failed = 0;
-
-    const tokenizer = new Tokenizer(input);
-    const parser = new Parser(tokenizer);
-
-    const program = parser.parse();
-    if (!program) {
-        Log.error("Parser Test", "program parsing failed!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-    if (program.statements.length != tests.length) {
-        Log.error("Parser Test", "program does not contain the correct number of statements!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-
     for (let i = 0; i < tests.length; i++) {
         const statement = program.statements[i];
         const expression = statement.expression;
@@ -431,12 +383,14 @@ function testOperatorPrecedenceParsing() {
         ["3 < 5 == true", "((3 < 5) == true)"],
         ["a + add(b * c) + d", "((a + add((b * c))) + d)"],
     ];
-    let failed = 0;
 
+    let failed = 0;
     for (let i = 0; i < tests.length; i++) {
-        const tokenizer = new Tokenizer(tests[i][0]);
-        const parser = new Parser(tokenizer);
-        const program = parser.parse();
+        const program = parseProgram(tests[i][0], 1);
+        if (!programParsingSuccessful(program)) {
+            failed++;
+            continue;
+        }
         const result = program.toString();
 
         if (result != tests[i][1]) {
@@ -553,21 +507,13 @@ function testIfElseExpressions() {
         ["a", ">", "b", "a", "b"],
         ["i", "==", "j", "j", "null"],
     ];
+
+    const program = parseProgram(input);
+    if (!programParsingSuccessful(program, tests.length)) {
+        return { totalTests: tests.length, failed: tests.length };
+    }
+
     let failed = 0;
-
-    const tokenizer = new Tokenizer(input);
-    const parser = new Parser(tokenizer);
-
-    const program = parser.parse();
-    if (!program) {
-        Log.error("Parser Test", "program parsing failed!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-    if (program.statements.length != tests.length) {
-        Log.error("Parser Test", "program does not contain the correct number of statements!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-
     for (let i = 0; i < tests.length; i++) {
         const statement = program.statements[i];
         const expression = statement.expression;
@@ -646,21 +592,13 @@ function testFunctionLiteralParsing() {
         ["x", "y", "(x + y)"],
         ["a", "b", "(b + (a * a))"],
     ];
+
+    const program = parseProgram(input);
+    if (!programParsingSuccessful(program, tests.length)) {
+        return { totalTests: tests.length, failed: tests.length };
+    }
+
     let failed = 0;
-
-    const tokenizer = new Tokenizer(input);
-    const parser = new Parser(tokenizer);
-
-    const program = parser.parse();
-    if (!program) {
-        Log.error("Parser Test", "program parsing failed!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-    if (program.statements.length != tests.length) {
-        Log.error("Parser Test", "program does not contain the correct number of statements!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-
     for (let i = 0; i < tests.length; i++) {
         const statement = program.statements[i];
         const expression = statement.expression;
@@ -719,20 +657,12 @@ function testStringLiteralParsing() {
 
     const tests = ["hello world"];
 
-    const tokenizer = new Tokenizer(input);
-    const parser = new Parser(tokenizer);
-
-    const program = parser.parse();
-    if (!program) {
-        Log.error("Parser Test", "program parsing failed!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-    if (program.statements.length != tests.length) {
-        Log.error("Parser Test", "program does not contain the correct number of statements!");
+    const program = parseProgram(input);
+    if (!programParsingSuccessful(program, tests.length)) {
         return { totalTests: tests.length, failed: tests.length };
     }
 
-    let tFailed = 0;
+    let failed = 0;
     for (let i = 0; i < tests.length; i++) {
         const statement = program.statements[i];
         const literal = statement.token;
@@ -752,10 +682,10 @@ function testStringLiteralParsing() {
             testFailed = true;
         }
 
-        if (testFailed) tFailed++;
+        if (testFailed) failed++;
     }
 
-    return { totalTests: tests.length, failedTests: tFailed };
+    return { totalTests: tests.length, failedTests: failed };
 }
 
 function testCallExpressionParsing() {
@@ -831,6 +761,24 @@ function testCallExpressionParsing() {
         if (testFailed) failed++;
     }
     return { totalTests: tests.length, failedTests: failed };
+}
+
+function parseProgram(input) {
+    const tokenizer = new Tokenizer(input);
+    const parser = new Parser(tokenizer);
+    return parser.parse();
+}
+
+function programParsingSuccessful(program, testCount = 0) {
+    if (!program) {
+        Log.error("Parser Test", "program parsing failed!");
+        return false;
+    }
+    if (testCount && program.statements.length != testCount) {
+        Log.error("Parser Test", "program does not contain the correct number of statements!");
+        return false;
+    }
+    return true;
 }
 
 export {
