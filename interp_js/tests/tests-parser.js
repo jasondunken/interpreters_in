@@ -734,11 +734,12 @@ function testStringLiteralParsing() {
 
     let tFailed = 0;
     for (let i = 0; i < tests.length; i++) {
-        let testFailed = false;
         const statement = program.statements[i];
-        console.log("statement: ", statement);
+        const literal = statement.token;
         const expected = tests[i];
-        Log.info("Parser Test", `test[${i}] expected 'STRING' got '${statement.token.token}'`);
+
+        Log.info("Parser Test", `test[${i}] expected 'STRING' got '${literal.token}'`);
+        let testFailed = false;
         if (statement.constructor.name != "ExpressionStatement") {
             Log.error(
                 "Parser Test",
@@ -746,8 +747,8 @@ function testStringLiteralParsing() {
             );
             testFailed = true;
         }
-        if (statement.token.literal !== expected) {
-            Log.error("Parser Test", `test[${i}] literal not '${expected}' got '${statement.token.literal}'`);
+        if (literal.literal !== expected) {
+            Log.error("Parser Test", `test[${i}] literal not '${expected}' got '${literal.literal}'`);
             testFailed = true;
         }
 
