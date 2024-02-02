@@ -18,7 +18,7 @@ export class Log {
     }
 
     static testResult(sender, passed, failed) {
-        const consoleMessage = `Passed: ${Log.EncodeColor("success", passed)}, Failed ${Log.EncodeColor(
+        const consoleMessage = `Passed: ${Log.EncodeColor("success", passed)}, Failed: ${Log.EncodeColor(
             "failure",
             failed
         )}`;
