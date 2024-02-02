@@ -711,6 +711,52 @@ function testFunctionLiteralParsing() {
     return { totalTests: tests.length, failedTests: failed };
 }
 
+function testStringLiteralParsing() {
+    Log.info("Parser Test", "testing testStringLiteralParsing()");
+    const input = `
+        "hello world";  
+    `;
+
+    const tests = ["hello world"];
+
+    const tokenizer = new Tokenizer(input);
+    const parser = new Parser(tokenizer);
+
+    const program = parser.parse();
+    if (!program) {
+        Log.error("Parser Test", "program parsing failed!");
+        return { totalTests: tests.length, failed: tests.length };
+    }
+    if (program.statements.length != tests.length) {
+        Log.error("Parser Test", "program does not contain the correct number of statements!");
+        return { totalTests: tests.length, failed: tests.length };
+    }
+
+    let tFailed = 0;
+    for (let i = 0; i < tests.length; i++) {
+        let testFailed = false;
+        const statement = program.statements[i];
+        console.log("statement: ", statement);
+        const expected = tests[i];
+        Log.info("Parser Test", `test[${i}] expected 'STRING' got '${statement.token.token}'`);
+        if (statement.constructor.name != "ExpressionStatement") {
+            Log.error(
+                "Parser Test",
+                `test[${i}] statement type not 'ExpressionStatement' got '${statement.constructor.name}'`
+            );
+            testFailed = true;
+        }
+        if (statement.token.literal !== expected) {
+            Log.error("Parser Test", `test[${i}] literal not '${expected}' got '${statement.token.literal}'`);
+            testFailed = true;
+        }
+
+        if (testFailed) tFailed++;
+    }
+
+    return { totalTests: tests.length, failedTests: tFailed };
+}
+
 function testCallExpressionParsing() {
     Log.info("Parser Test", "testing parseCallArguments()");
     const input = `
@@ -797,5 +843,6 @@ export {
     testIfExpressions,
     testIfElseExpressions,
     testFunctionLiteralParsing,
+    testStringLiteralParsing,
     testCallExpressionParsing,
 };

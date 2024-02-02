@@ -135,6 +135,17 @@ class FunctionLiteral extends Expression {
     }
 }
 
+class StringLiteral extends Expression {
+    constructor(token, value) {
+        super(token);
+        this.value = value;
+    }
+
+    toString() {
+        return this.value;
+    }
+}
+
 class IntegerLiteral extends Expression {
     constructor(token) {
         super(token);
@@ -224,6 +235,7 @@ export {
     BlockStatement,
     Identifier,
     FunctionLiteral,
+    StringLiteral,
     IntegerLiteral,
     Boolean,
     IfExpression,
