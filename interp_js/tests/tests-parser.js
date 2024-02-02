@@ -19,7 +19,7 @@ function testLetStatements() {
 
     const program = parseProgram(input);
     if (!programParsingSuccessful(program, tests.length)) {
-        return { totalTests: tests.length, failed: tests.length };
+        return { totalTests: tests.length, failedTests: tests.length };
     }
 
     let failed = 0;
@@ -90,7 +90,7 @@ function testReturnStatements() {
 
     const program = parseProgram(input);
     if (!programParsingSuccessful(program, tests.length)) {
-        return { totalTests: tests.length, failed: tests.length };
+        return { totalTests: tests.length, failedTests: tests.length };
     }
 
     let failed = 0;
@@ -139,7 +139,7 @@ function testIdentifierExpressions() {
 
     const program = parseProgram(input);
     if (!programParsingSuccessful(program, tests.length)) {
-        return { totalTests: tests.length, failed: tests.length };
+        return { totalTests: tests.length, failedTests: tests.length };
     }
 
     let failed = 0;
@@ -191,7 +191,7 @@ function testIntegerLiteralExpressions() {
 
     const program = parseProgram(input);
     if (!programParsingSuccessful(program, tests.length)) {
-        return { totalTests: tests.length, failed: tests.length };
+        return { totalTests: tests.length, failedTests: tests.length };
     }
 
     let failed = 0;
@@ -245,7 +245,7 @@ function testParsingPrefixExpressions() {
 
     const program = parseProgram(input);
     if (!programParsingSuccessful(program, tests.length)) {
-        return { totalTests: tests.length, failed: tests.length };
+        return { totalTests: tests.length, failedTests: tests.length };
     }
 
     let failed = 0;
@@ -314,7 +314,7 @@ function testParsingInfixExpressions() {
 
     const program = parseProgram(input);
     if (!programParsingSuccessful(program, tests.length)) {
-        return { totalTests: tests.length, failed: tests.length };
+        return { totalTests: tests.length, failedTests: tests.length };
     }
 
     let failed = 0;
@@ -416,21 +416,13 @@ function testIfExpressions() {
         ["a", ">", "b", "a"],
         ["i", "==", "j", "j"],
     ];
+
+    const program = parseProgram(input);
+    if (!programParsingSuccessful(program, tests.length)) {
+        return { totalTests: tests.length, failedTests: tests.length };
+    }
+
     let failed = 0;
-
-    const tokenizer = new Tokenizer(input);
-    const parser = new Parser(tokenizer);
-
-    const program = parser.parse();
-    if (!program) {
-        Log.error("Parser Test", "program parsing failed!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-    if (program.statements.length != tests.length) {
-        Log.error("Parser Test", "program does not contain the correct number of statements!");
-        return { totalTests: tests.length, failed: tests.length };
-    }
-
     for (let i = 0; i < tests.length; i++) {
         const statement = program.statements[i];
         const expression = statement.expression;
@@ -510,7 +502,7 @@ function testIfElseExpressions() {
 
     const program = parseProgram(input);
     if (!programParsingSuccessful(program, tests.length)) {
-        return { totalTests: tests.length, failed: tests.length };
+        return { totalTests: tests.length, failedTests: tests.length };
     }
 
     let failed = 0;
@@ -595,7 +587,7 @@ function testFunctionLiteralParsing() {
 
     const program = parseProgram(input);
     if (!programParsingSuccessful(program, tests.length)) {
-        return { totalTests: tests.length, failed: tests.length };
+        return { totalTests: tests.length, failedTests: tests.length };
     }
 
     let failed = 0;
@@ -649,7 +641,7 @@ function testFunctionLiteralParsing() {
     return { totalTests: tests.length, failedTests: failed };
 }
 
-function testStringLiteralParsing() {
+function testStringLiteralExpression() {
     Log.info("Parser Test", "testing testStringLiteralParsing()");
     const input = `
         "hello world";  
@@ -659,26 +651,26 @@ function testStringLiteralParsing() {
 
     const program = parseProgram(input);
     if (!programParsingSuccessful(program, tests.length)) {
-        return { totalTests: tests.length, failed: tests.length };
+        return { totalTests: tests.length, failedTests: tests.length };
     }
 
     let failed = 0;
     for (let i = 0; i < tests.length; i++) {
         const statement = program.statements[i];
-        const literal = statement.token;
+        const literal = statement.expression;
         const expected = tests[i];
 
-        Log.info("Parser Test", `test[${i}] expected 'STRING' got '${literal.token}'`);
+        Log.info("Parser Test", `test[${i}] expected 'StringLiteral' got '${statement.constructor.name}'`);
         let testFailed = false;
-        if (statement.constructor.name != "ExpressionStatement") {
+        if (statement.constructor.name != "StringLiteral") {
             Log.error(
                 "Parser Test",
-                `test[${i}] statement type not 'ExpressionStatement' got '${statement.constructor.name}'`
+                `test[${i}] statement type not 'StringLiteral' got '${statement.constructor.name}'`
             );
             testFailed = true;
         }
-        if (literal.literal !== expected) {
-            Log.error("Parser Test", `test[${i}] literal not '${expected}' got '${literal.literal}'`);
+        if (!literal?.value || literal.value !== expected) {
+            Log.error("Parser Test", `test[${i}] literal not '${expected}' got '${literal.value}'`);
             testFailed = true;
         }
 
@@ -766,12 +758,21 @@ function testCallExpressionParsing() {
 function parseProgram(input) {
     const tokenizer = new Tokenizer(input);
     const parser = new Parser(tokenizer);
-    return parser.parse();
+    const program = parser.parse();
+    program["errors"] = parser.getErrors();
+    return program;
 }
 
 function programParsingSuccessful(program, testCount = 0) {
     if (!program) {
         Log.error("Parser Test", "program parsing failed!");
+        return false;
+    }
+    if (program.errors.length > 0) {
+        Log.error("Parser Test", "program parsing resulted in errors.");
+        for (const error of program.errors) {
+            Log.error("Parser Test", error);
+        }
         return false;
     }
     if (testCount && program.statements.length != testCount) {
@@ -792,6 +793,6 @@ export {
     testIfExpressions,
     testIfElseExpressions,
     testFunctionLiteralParsing,
-    testStringLiteralParsing,
+    testStringLiteralExpression,
     testCallExpressionParsing,
 };
