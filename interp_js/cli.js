@@ -49,10 +49,15 @@ class Monkey {
             case "load":
                 this.loadFile(cmd[1], cmd.slice(2));
                 return;
+            case "clear":
+                this.clear();
+                return;
             default:
                 if (command.length > 0) {
-                    command = command.trim();
-                    this.doTheMonkey(command);
+                    command = command.split("~");
+                    const input = command[0].trim();
+                    const args = command.slice(1);
+                    this.doTheMonkey(input, args);
                 } else {
                     console.log("enter a valid monkeyscript string");
                     console.log("something like 'let a = 10'");
@@ -74,17 +79,34 @@ class Monkey {
         });
     }
 
+    clear() {
+        this.environment.clear();
+        this.loop();
+    }
+
     doTheMonkey(inputString, args) {
-        console.log("input: ", inputString);
         const tokenizer = new Tokenizer(inputString);
         const parser = new Parser(tokenizer);
         const program = parser.parse();
-        const evaluator = new Evaluator();
-        console.log("p.errors: ", parser.getErrors());
-        console.log("program string: ", program.toString());
-        const evaluation = evaluator.eval(program, this.environment);
-        console.log("evaluates to: ", evaluation);
-        console.log(evaluation.value);
+        const pErrors = parser.getErrors();
+        if (pErrors.length > 0) {
+            for (const error of pErrors) {
+                Log.error("Parser", error);
+            }
+        } else {
+            if (args.find((a) => a.trim() === "p")) {
+                Log.info("Parser", `program string: ${program.toString()}`);
+            }
+            const evaluator = new Evaluator();
+            const evaluation = evaluator.eval(program, this.environment);
+            if (args.find((a) => a.trim() === "e")) {
+                Log.info("Evaluator", evaluation);
+                console.log("evaluation: ", evaluation);
+            }
+            if (evaluation) {
+                console.log(evaluation.value);
+            }
+        }
         this.loop();
     }
 }

@@ -21,6 +21,10 @@ class Environment {
         this.store[name] = value;
     }
 
+    clear() {
+        this.store = {};
+    }
+
     static newEnclosedEnvironment(outer) {
         const env = Environment.newEnvironment();
         env.outer = outer;
