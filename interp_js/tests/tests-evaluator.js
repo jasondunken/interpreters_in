@@ -332,6 +332,30 @@ function testEvalFunctionApplication() {
     return { totalTests: tests.length, failedTests: failed };
 }
 
+function testEvalStringLiteral() {
+    Log.info("Evaluator Test", "testEvalStringLiteral()");
+    const tests = [{ input: '"hello world";', expected: "hello world" }];
+
+    let failed = 0;
+    for (let i = 0; i < tests.length; i++) {
+        let testFailed = false;
+        const evaluation = testEval(tests[i].input);
+        Log.info(
+            "Evaluator Test",
+            `test[${i}] input "${tests[i].input}", expected '${tests[i].expected}', got '${evaluation.value}'`
+        );
+        if (evaluation.type() == ObjectType.ERROR_OBJ) {
+            Log.error("Evaluator Test", `test[${i}] ${evaluation.string()}`);
+            testFailed = true;
+        } else if (evaluation.string() != tests[i].expected) {
+            testFailed = true;
+        }
+        if (testFailed) failed++;
+    }
+
+    return { totalTests: tests.length, failedTests: failed };
+}
+
 export {
     testEvalIntegerExpression,
     testEvalBooleanExpression,
@@ -342,4 +366,5 @@ export {
     testEvalLetStatements,
     testEvalFunctionObject,
     testEvalFunctionApplication,
+    testEvalStringLiteral,
 };

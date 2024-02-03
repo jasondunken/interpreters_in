@@ -1,4 +1,4 @@
-import { ObjectType, Integer, Boolean, ReturnValue, Null, Error, FunctionObj } from "./object.js";
+import { ObjectType, Integer, Boolean, ReturnValue, Null, Error, FunctionObj, StringObj } from "./object.js";
 
 import { Log } from "./logger.js";
 import { Environment } from "./environment.js";
@@ -17,6 +17,7 @@ class Evaluator {
         Identifier: "Identifier",
         FunctionLiteral: "FunctionLiteral",
         IntegerLiteral: "IntegerLiteral",
+        StringLiteral: "StringLiteral",
         Boolean: "Boolean",
         IfExpression: "IfExpression",
         CallExpression: "CallExpression",
@@ -26,6 +27,7 @@ class Evaluator {
 
     eval(node, env) {
         const nodeType = node.constructor.name;
+        // this.inspectNode(node);
         // console.log("eval ", nodeType);
         switch (nodeType) {
             case this.NODE_TYPE.Program:
@@ -36,6 +38,8 @@ class Evaluator {
                 return new Integer(node.value);
             case this.NODE_TYPE.Boolean:
                 return this.boolNodeToBoolObject(node.value);
+            case this.NODE_TYPE.StringLiteral:
+                return new StringObj(node.value);
             case this.NODE_TYPE.PrefixExpression:
                 const pRight = this.eval(node.right, env);
                 if (this.isError(pRight)) {
@@ -61,7 +65,6 @@ class Evaluator {
                 const body = node.body;
                 return new FunctionObj(params, body, env);
             case this.NODE_TYPE.CallExpression:
-                // this.inspectNode(node);
                 const func = this.eval(node.func, env);
                 if (this.isError(func)) {
                     return func;
@@ -96,7 +99,6 @@ class Evaluator {
         let result; // Object
         for (let statement of statements) {
             result = this.eval(statement, env);
-
             switch (result.type()) {
                 case ObjectType.RETURN_VALUE_OBJ:
                     return result.returnValue;

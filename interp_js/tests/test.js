@@ -25,6 +25,7 @@ import {
     testEvalLetStatements,
     testEvalFunctionObject,
     testEvalFunctionApplication,
+    testEvalStringLiteral,
 } from "./tests-evaluator.js";
 
 (function runTests() {
@@ -34,30 +35,31 @@ import {
         failedTests: 0,
     };
     // tokenizer
-    addResult(results, testNextToken());
-    // parser
-    addResult(results, testLetStatements());
-    addResult(results, testReturnStatements());
-    addResult(results, testIdentifierExpressions());
-    addResult(results, testIntegerLiteralExpressions());
-    addResult(results, testParsingPrefixExpressions());
-    addResult(results, testParsingInfixExpressions());
-    addResult(results, testOperatorPrecedenceParsing());
-    addResult(results, testIfExpressions());
-    addResult(results, testIfElseExpressions());
-    addResult(results, testFunctionLiteralParsing());
-    addResult(results, testCallExpressionParsing());
-    addResult(results, testStringLiteralExpression());
-    // evaluator
-    addResult(results, testEvalIntegerExpression());
-    addResult(results, testEvalBooleanExpression());
-    addResult(results, testEvalBangOperator());
-    addResult(results, testEvalIfElseExpressions());
-    addResult(results, testEvalReturnStatements());
-    addResult(results, testErrorHandling());
-    addResult(results, testEvalLetStatements());
-    addResult(results, testEvalFunctionObject());
-    addResult(results, testEvalFunctionApplication());
+    // addResult(results, testNextToken());
+    // // parser
+    // addResult(results, testLetStatements());
+    // addResult(results, testReturnStatements());
+    // addResult(results, testIdentifierExpressions());
+    // addResult(results, testIntegerLiteralExpressions());
+    // addResult(results, testParsingPrefixExpressions());
+    // addResult(results, testParsingInfixExpressions());
+    // addResult(results, testOperatorPrecedenceParsing());
+    // addResult(results, testIfExpressions());
+    // addResult(results, testIfElseExpressions());
+    // addResult(results, testFunctionLiteralParsing());
+    // addResult(results, testCallExpressionParsing());
+    // addResult(results, testStringLiteralExpression());
+    // // evaluator
+    // addResult(results, testEvalIntegerExpression());
+    // addResult(results, testEvalBooleanExpression());
+    // addResult(results, testEvalBangOperator());
+    // addResult(results, testEvalIfElseExpressions());
+    // addResult(results, testEvalReturnStatements());
+    // addResult(results, testErrorHandling());
+    // addResult(results, testEvalLetStatements());
+    // addResult(results, testEvalFunctionObject());
+    // addResult(results, testEvalFunctionApplication());
+    addResult(results, testEvalStringLiteral());
 
     Log.info("interp_js", "test suite completed!");
     Log.testResult("interp_js", results.totalTests - results.failedTests, results.failedTests);

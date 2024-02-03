@@ -10,6 +10,7 @@ const ObjectType = {
     RETURN_VALUE_OBJ: "RETURN_VALUE",
     ERROR_OBJ: "ERROR",
     FUNCTION_OBJ: "FUNCTION",
+    STRING_OBJ: "STRING",
 };
 
 class Integer extends Object {
@@ -105,4 +106,19 @@ class FunctionObj extends Object {
     }
 }
 
-export { ObjectType, Integer, Boolean, Null, ReturnValue, Error, FunctionObj };
+class StringObj extends Object {
+    constructor(value) {
+        super();
+        this.value = value;
+    }
+
+    type() {
+        return ObjectType.STRING_OBJ;
+    }
+
+    string() {
+        return this.value;
+    }
+}
+
+export { ObjectType, Integer, Boolean, Null, ReturnValue, Error, FunctionObj, StringObj };
