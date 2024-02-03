@@ -19,6 +19,7 @@ const args = process.argv.slice(3);
 
 class Monkey {
     constructor(inputFile, args) {
+        this.environment = new Environment();
         this.reader = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
@@ -79,11 +80,11 @@ class Monkey {
         const parser = new Parser(tokenizer);
         const program = parser.parse();
         const evaluator = new Evaluator();
-        const environment = new Environment();
         console.log("p.errors: ", parser.getErrors());
         console.log("program string: ", program.toString());
-        const evaluation = evaluator.eval(program, environment);
+        const evaluation = evaluator.eval(program, this.environment);
         console.log("evaluates to: ", evaluation);
+        console.log(evaluation.value);
         this.loop();
     }
 }
