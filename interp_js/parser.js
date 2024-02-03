@@ -13,6 +13,7 @@ import {
     PrefixExpression,
     InfixExpression,
     CallExpression,
+    StringLiteral,
 } from "./ast.js";
 import { Tokens } from "./token.js";
 
@@ -63,6 +64,7 @@ class Parser {
         this.registerPrefix(Tokens.IF.token, this.parseIfExpression);
         this.registerPrefix(Tokens.LPAREN.token, this.parseGroupedExpression);
         this.registerPrefix(Tokens.FUNCTION.token, this.parseFunctionLiteral);
+        this.registerPrefix(Tokens.STRING.token, this.parseStringLiteral);
 
         this.registerInfix(Tokens.PLUS.token, this.parseInfixExpression);
         this.registerInfix(Tokens.MINUS.token, this.parseInfixExpression);
@@ -333,6 +335,10 @@ class Parser {
             return null;
         }
         return literal;
+    }
+
+    parseStringLiteral(self) {
+        return new StringLiteral(self.curToken, self.curToken.literal);
     }
 
     parseBoolean(self) {

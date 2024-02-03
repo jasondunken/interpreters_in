@@ -660,13 +660,10 @@ function testStringLiteralExpression() {
         const literal = statement.expression;
         const expected = tests[i];
 
-        Log.info("Parser Test", `test[${i}] expected 'StringLiteral' got '${statement.constructor.name}'`);
+        Log.info("Parser Test", `test[${i}] expected 'StringLiteral' got '${literal.constructor.name}'`);
         let testFailed = false;
-        if (statement.constructor.name != "StringLiteral") {
-            Log.error(
-                "Parser Test",
-                `test[${i}] statement type not 'StringLiteral' got '${statement.constructor.name}'`
-            );
+        if (literal.constructor.name != "StringLiteral") {
+            Log.error("Parser Test", `test[${i}] statement type not 'StringLiteral' got '${literal.constructor.name}'`);
             testFailed = true;
         }
         if (!literal?.value || literal.value !== expected) {
