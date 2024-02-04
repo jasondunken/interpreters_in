@@ -220,7 +220,7 @@ function testErrorHandling() {
             expected: "unknown operator: BOOLEAN + BOOLEAN",
         },
         { input: "foobar", expected: "identifier not found: foobar" },
-        { input: "Hello - World", expected: "unknown operator: STRING - STRING" },
+        { input: '"Hello" - "World"', expected: "unknown operator: STRING - STRING" },
     ];
 
     let failed = 0;
