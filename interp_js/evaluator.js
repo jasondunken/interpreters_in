@@ -140,6 +140,9 @@ class Evaluator {
         if (left.type() === ObjectType.INTEGER_OBJ && right.type() === ObjectType.INTEGER_OBJ) {
             return this.evalIntegerInfixExpression(operator, left, right, env);
         }
+        if (left.type() === ObjectType.STRING_OBJ && right.type() === ObjectType.STRING_OBJ) {
+            return this.evalStringInfixExpression(operator, left, right, env);
+        }
         if (left.type() != right.type()) {
             return this.newError(`type mismatch: ${left.type()} ${operator} ${right.type()}`);
         }
@@ -174,6 +177,16 @@ class Evaluator {
             default:
                 return this.newError(`unknown operator: ${left.type()} ${operator} ${right.type()}`);
         }
+    }
+
+    evalStringInfixExpression(operator, left, right, env) {
+        if (operator != "+") {
+            return this.newError(`unknown operator: ${left.type()} ${operator} ${right.type()}`);
+        }
+
+        const leftVal = left.value;
+        const rightVal = right.value;
+        return new StringObj(`${leftVal}${rightVal}`);
     }
 
     evalIfExpression(expression, env) {
