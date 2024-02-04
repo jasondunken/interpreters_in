@@ -220,6 +220,7 @@ function testErrorHandling() {
             expected: "unknown operator: BOOLEAN + BOOLEAN",
         },
         { input: "foobar", expected: "identifier not found: foobar" },
+        { input: "Hello - World", expected: "unknown operator: STRING - STRING" },
     ];
 
     let failed = 0;
@@ -356,6 +357,34 @@ function testEvalStringLiteral() {
     return { totalTests: tests.length, failedTests: failed };
 }
 
+function testEvalStringConcatenation() {
+    Log.info("Evaluator Test", "testEvalStringConcatenation()");
+    const tests = [{ input: '"hello" + " " + "world";', expected: "hello world" }];
+
+    let failed = 0;
+    for (let i = 0; i < tests.length; i++) {
+        let testFailed = false;
+        const evaluation = testEval(tests[i].input);
+        Log.info(
+            "Evaluator Test",
+            `test[${i}] input "${tests[i].input}", expected '${tests[i].expected}', got '${evaluation.value}'`
+        );
+        if (evaluation.type() == ObjectType.ERROR_OBJ) {
+            Log.error("Evaluator Test", `test[${i}] ${evaluation.string()}`);
+            testFailed = true;
+        } else if (evaluation.type() != ObjectType.STRING_OBJ) {
+            Log.error("Evaluator Test", `test[${i}] expected STRING object, got ${evaluation.type()}`);
+            testFailed = true;
+        } else if (evaluation.value != tests[i].expected) {
+            Log.error("Evaluator Test", `test[${i}] expected ${tests[i].expected}, got ${evaluation.value}`);
+            testFailed = true;
+        }
+        if (testFailed) failed++;
+    }
+
+    return { totalTests: tests.length, failedTests: failed };
+}
+
 export {
     testEvalIntegerExpression,
     testEvalBooleanExpression,
@@ -367,4 +396,5 @@ export {
     testEvalFunctionObject,
     testEvalFunctionApplication,
     testEvalStringLiteral,
+    testEvalStringConcatenation,
 };
