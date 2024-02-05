@@ -1,4 +1,5 @@
 import { ObjectType, Integer, Boolean, ReturnValue, Null, Error, FunctionObj, StringObj } from "./object.js";
+import { builtins } from "./builtins.js";
 
 import { Log } from "./logger.js";
 import { Environment } from "./environment.js";
@@ -249,13 +250,16 @@ class Evaluator {
     }
 
     applyFunction(func, args) {
-        if (func.type() !== ObjectType.FUNCTION_OBJ) {
-            return this.newError(`not a function ${func.type()}`);
+        switch (func.type()) {
+            case ObjectType.FUNCTION_OBJ:
+                const extendedEnv = this.extendFunctionEnv(func, args);
+                const evaluated = this.eval(func.body, extendedEnv);
+                return this.unwrapReturnValue(evaluated);
+            case ObjectType.BUILTIN_OBJ:
+                return func.fn(args);
+            default:
+                return this.newError(`not a function ${func.type()}`);
         }
-
-        const extendedEnv = this.extendFunctionEnv(func, args);
-        const evaluated = this.eval(func.body, extendedEnv);
-        return this.unwrapReturnValue(evaluated);
     }
 
     extendFunctionEnv(func, args) {
@@ -280,10 +284,13 @@ class Evaluator {
 
     evalIdentifier(node, env) {
         const val = env.get(node.value);
-        if (!val) {
-            return this.newError(`identifier not found: ${node.value}`);
+        if (val) {
+            return val;
         }
-        return val;
+        if (builtins[node.value]) {
+            return builtins[node.value];
+        }
+        return this.newError(`identifier not found: ${node.value}`);
     }
 
     newError(message) {

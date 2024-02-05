@@ -363,11 +363,12 @@ function testEvalStringConcatenation() {
 
     let failed = 0;
     for (let i = 0; i < tests.length; i++) {
+        const test = tests[i];
+        const evaluation = testEval(test.input);
         let testFailed = false;
-        const evaluation = testEval(tests[i].input);
         Log.info(
             "Evaluator Test",
-            `test[${i}] input "${tests[i].input}", expected '${tests[i].expected}', got '${evaluation.value}'`
+            `test[${i}] input "${test.input}", expected '${test.expected}', got '${evaluation.value}'`
         );
         if (evaluation.type() == ObjectType.ERROR_OBJ) {
             Log.error("Evaluator Test", `test[${i}] ${evaluation.string()}`);
@@ -375,9 +376,48 @@ function testEvalStringConcatenation() {
         } else if (evaluation.type() != ObjectType.STRING_OBJ) {
             Log.error("Evaluator Test", `test[${i}] expected STRING object, got ${evaluation.type()}`);
             testFailed = true;
-        } else if (evaluation.value != tests[i].expected) {
-            Log.error("Evaluator Test", `test[${i}] expected ${tests[i].expected}, got ${evaluation.value}`);
+        } else if (evaluation.value != test.expected) {
+            Log.error("Evaluator Test", `test[${i}] expected ${test.expected}, got ${evaluation.value}`);
             testFailed = true;
+        }
+        if (testFailed) failed++;
+    }
+
+    return { totalTests: tests.length, failedTests: failed };
+}
+
+function testEvalBuiltinFunctions() {
+    Log.info("Evaluator Test", "testEvalBuiltinFunctions()");
+    const tests = [
+        { input: 'len("");', expected: 0 },
+        { input: 'len("four");', expected: 4 },
+        { input: 'len("hello world");', expected: 11 },
+        { input: "len(1);", expected: "argument to 'len' not supported, got INTEGER" },
+        { input: 'len("one", "two");', expected: "wrong number of arguments. got=2, want=1" },
+    ];
+
+    let failed = 0;
+    for (let i = 0; i < tests.length; i++) {
+        const test = tests[i];
+        const evaluated = testEval(test.input);
+        let testFailed = false;
+
+        switch (evaluated.type()) {
+            case ObjectType.INTEGER_OBJ:
+                testIntegerObject(i, evaluated, test.expected);
+                break;
+            case ObjectType.ERROR_OBJ:
+                if (evaluated.message !== test.expected) {
+                    Log.error(
+                        "Evaluator Test",
+                        `wrong error message. expected=${test.expected}, got="${evaluated.message}"`
+                    );
+                    testFailed = true;
+                }
+                break;
+            default:
+                Log.error("Evaluator Test", `object is not ERROR, got=${evaluated.type()}`);
+                testFailed = true;
         }
         if (testFailed) failed++;
     }
@@ -397,4 +437,5 @@ export {
     testEvalFunctionApplication,
     testEvalStringLiteral,
     testEvalStringConcatenation,
+    testEvalBuiltinFunctions,
 };

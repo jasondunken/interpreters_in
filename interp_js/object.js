@@ -11,6 +11,7 @@ const ObjectType = {
     ERROR_OBJ: "ERROR",
     FUNCTION_OBJ: "FUNCTION",
     STRING_OBJ: "STRING",
+    BUILTIN_OBJ: "BUILTIN",
 };
 
 class Integer extends Object {
@@ -121,4 +122,21 @@ class StringObj extends Object {
     }
 }
 
-export { ObjectType, Integer, Boolean, Null, ReturnValue, Error, FunctionObj, StringObj };
+class Builtin extends Object {
+    constructor(fn) {
+        super();
+        this.fn = fn;
+    }
+
+    type() {
+        return ObjectType.BUILTIN_OBJ;
+    }
+
+    inspect() {
+        return "builtin function";
+    }
+}
+
+function builtinFunction(args) {}
+
+export { ObjectType, Integer, Boolean, Null, ReturnValue, Error, FunctionObj, StringObj, Builtin };
