@@ -35,6 +35,8 @@ const Tokens = {
     RPAREN: { token: "RPAREN", literal: ")" },
     LBRACE: { token: "LBRACE", literal: "{" },
     RBRACE: { token: "RBRACE", literal: "}" },
+    LBRACKET: { token: "LBRACKET", literal: "[" },
+    RBRACKET: { token: "RBRACKET", literal: "]" },
 
     // identifiers
     IDENT: { token: "IDENT", literal: "" },

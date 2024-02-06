@@ -2,6 +2,7 @@ import { Tokenizer } from "../tokenizer.js";
 import { Parser } from "../parser.js";
 
 import { Log } from "../logger.js";
+import { ObjectType } from "../object.js";
 
 function testLetStatements() {
     Log.info("Parser Test", "testing parseLetStatement()");
@@ -752,6 +753,71 @@ function testCallExpressionParsing() {
     return { totalTests: tests.length, failedTests: failed };
 }
 
+function testArrayLiteralParsing() {
+    Log.info("Parser Test", "testing testArrayLiteralParsing()");
+    const input = `
+        [1, 2 * 2, 3 + 3];  
+    `;
+
+    const tests = ["hello world"];
+
+    const program = parseProgram(input);
+    if (!programParsingSuccessful(program)) {
+        return { totalTests: tests.length, failedTests: tests.length };
+    }
+
+    const statement = program.statements[0];
+    const array = statement.expression;
+    let failed = false;
+    if (array.constructor.name != "ArrayLiteral") {
+        Log.error("Parser Test", `expression not ArrayLiteral. got=${array.constructor.name}`);
+        failed = true;
+    } else if (array.elements.length != 3) {
+        Log.error("Parser Test", `length of elements not 3, got=${array.elements.length}`);
+        failed = true;
+    } else {
+        if (!testIntegerLiteral(0, array.elements[0], 1)) failed = true;
+        if (!testInfixExpression(0, array.elements[1], 2, "*", 2)) failed = true;
+        if (!testInfixExpression(0, array.elements[2], 3, "+", 3)) failed = true;
+    }
+    failed = failed ? 1 : 0;
+    return { totalTests: tests.length, failedTests: failed };
+}
+
+function testIntegerLiteral(testNum, literal, expected) {
+    let valid = true;
+    if (literal.constructor.name !== "IntegerLiteral") {
+        Log.error("Parser Test", `test${testNum} expected IntegerLiteral, got ${expression.constructor.name}`);
+        valid = false;
+    }
+    if (literal.value !== expected) {
+        Log.error("Parser Test", `test${testNum} expected value ${expected}, got ${expression.value}`);
+        valid = false;
+    }
+    return valid;
+}
+
+function testInfixExpression(testNum, expression, left, operator, right) {
+    let valid = true;
+    if (expression.constructor.name !== "InfixExpression") {
+        Log.error("Parser Test", `test${testNum} expected InfixExpression, got ${expression.constructor.name}`);
+        valid = false;
+    }
+    if (expression.left.value !== left) {
+        Log.error("Parser Test", `test${testNum} expected left value to be ${left}, got ${expression.left.value}`);
+        valid = false;
+    }
+    if (expression.operator !== operator) {
+        Log.error("Parser Test", `test${testNum} expected operator to be ${operator}, got ${expression.operator}`);
+        valid = false;
+    }
+    if (expression.right.value !== right) {
+        Log.error("Parser Test", `test${testNum} expected right value to be ${right}, got ${expression.right.value}`);
+        valid = false;
+    }
+    return valid;
+}
+
 function parseProgram(input) {
     const tokenizer = new Tokenizer(input);
     const parser = new Parser(tokenizer);
@@ -792,4 +858,5 @@ export {
     testFunctionLiteralParsing,
     testStringLiteralExpression,
     testCallExpressionParsing,
+    testArrayLiteralParsing,
 };

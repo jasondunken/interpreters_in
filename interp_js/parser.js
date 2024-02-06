@@ -14,6 +14,7 @@ import {
     InfixExpression,
     CallExpression,
     StringLiteral,
+    ArrayLiteral,
 } from "./ast.js";
 import { Tokens } from "./token.js";
 
@@ -65,6 +66,7 @@ class Parser {
         this.registerPrefix(Tokens.LPAREN.token, this.parseGroupedExpression);
         this.registerPrefix(Tokens.FUNCTION.token, this.parseFunctionLiteral);
         this.registerPrefix(Tokens.STRING.token, this.parseStringLiteral);
+        this.registerPrefix(Tokens.LBRACKET.token, this.parseArrayLiteral);
 
         this.registerInfix(Tokens.PLUS.token, this.parseInfixExpression);
         this.registerInfix(Tokens.MINUS.token, this.parseInfixExpression);
@@ -170,7 +172,6 @@ class Parser {
     parseExpressionStatement() {
         const statement = new ExpressionStatement(this.curToken);
         statement.expression = this.parseExpression(PRECEDENCE.LOWEST);
-
         if (this.peekTokenIs(Tokens.SEMICOLON.token)) {
             this.nextToken();
         }
@@ -248,7 +249,7 @@ class Parser {
 
     parseCallExpression(self, func) {
         const expression = new CallExpression(self.curToken, func);
-        expression.arguments = self.parseCallArguments();
+        expression.arguments = self.parseExpressionList(Tokens.RPAREN.token);
         return expression;
     }
 
@@ -341,8 +342,34 @@ class Parser {
         return new StringLiteral(self.curToken, self.curToken.literal);
     }
 
+    parseArrayLiteral(self) {
+        const array = new ArrayLiteral(self.curToken);
+        array.elements = self.parseExpressionList(Tokens.RBRACKET.token);
+        return array;
+    }
+
     parseBoolean(self) {
         return new Boolean(self.curToken, self.curTokenIs(Tokens.TRUE.token));
+    }
+
+    parseExpressionList(end) {
+        const list = [];
+        if (this.peekTokenIs(end)) {
+            this.nextToken();
+            return list;
+        }
+
+        this.nextToken();
+        list.push(this.parseExpression(PRECEDENCE.LOWEST));
+        while (this.peekTokenIs(Tokens.COMMA.token)) {
+            this.nextToken();
+            this.nextToken();
+            list.push(this.parseExpression(PRECEDENCE.LOWEST));
+        }
+        if (!this.expectPeek(end)) {
+            return new Null();
+        }
+        return list;
     }
 
     parsePrefixExpression(self) {

@@ -167,6 +167,22 @@ class Boolean extends Expression {
     }
 }
 
+class ArrayLiteral extends Expression {
+    constructor(token) {
+        super(token);
+    }
+
+    expressionNode() {}
+
+    toString() {
+        let arr = [];
+        for (let element of elements) {
+            arr.push(element.value);
+        }
+        return `[ ${arr.join(", ")} ]`;
+    }
+}
+
 class IfExpression extends Expression {
     constructor(token, condition, consequence, alternative) {
         super(token);
@@ -238,6 +254,7 @@ export {
     StringLiteral,
     IntegerLiteral,
     Boolean,
+    ArrayLiteral,
     IfExpression,
     CallExpression,
     PrefixExpression,

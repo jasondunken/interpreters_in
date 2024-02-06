@@ -93,6 +93,12 @@ class Tokenizer {
             case Tokens.RBRACE.literal:
                 token = new Token(Tokens.RBRACE.token, this.ch);
                 break;
+            case Tokens.LBRACKET.literal:
+                token = new Token(Tokens.LBRACKET.token, this.ch);
+                break;
+            case Tokens.RBRACKET.literal:
+                token = new Token(Tokens.RBRACKET.token, this.ch);
+                break;
             case Tokens.EOF.literal:
                 token = new Token(Tokens.EOF.token, "\0");
                 break;

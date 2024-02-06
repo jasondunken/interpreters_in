@@ -26,7 +26,7 @@ export function testNextToken() {
 
         "foobar"
         "foo bar"
-        
+        [1, 2];
         `;
 
     const tokenizer = new Tokenizer(input);
@@ -116,6 +116,13 @@ export function testNextToken() {
 
         [Tokens.STRING, "foobar"],
         [Tokens.STRING, "foo bar"],
+
+        [Tokens.LBRACKET, "["],
+        [Tokens.INT, "1"],
+        [Tokens.COMMA, ","],
+        [Tokens.INT, "2"],
+        [Tokens.RBRACKET, "]"],
+        [Tokens.SEMICOLON, ";"],
 
         [Tokens.EOF, "\0"],
     ];
