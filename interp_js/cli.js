@@ -25,7 +25,9 @@ class Monkey {
             output: process.stdout,
         });
 
+        this.loading = false;
         if (inputFile) {
+            this.loading = true;
             this.loadFile(inputFile, args);
         }
 
@@ -48,10 +50,10 @@ class Monkey {
                 return;
             case "load":
                 this.loadFile(cmd[1], cmd.slice(2));
-                return;
+                break;
             case "clear":
                 this.clear();
-                return;
+                break;
             default:
                 if (command.length > 0) {
                     command = command.split("~");
@@ -63,6 +65,7 @@ class Monkey {
                     console.log("something like 'let a = 10'");
                 }
         }
+        this.loop();
     }
 
     loadFile(path, args) {
@@ -75,13 +78,11 @@ class Monkey {
                 this.doTheMonkey(data, args);
             }
             this.loading = false;
-            this.loop();
         });
     }
 
     clear() {
         this.environment.clear();
-        this.loop();
     }
 
     doTheMonkey(inputString, args) {
@@ -107,7 +108,6 @@ class Monkey {
                 console.log(evaluation.value);
             }
         }
-        this.loop();
     }
 }
 
