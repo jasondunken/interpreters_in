@@ -176,10 +176,10 @@ class ArrayLiteral extends Expression {
 
     toString() {
         let arr = [];
-        for (let element of elements) {
+        for (let element of this.elements) {
             arr.push(element.value);
         }
-        return `[ ${arr.join(", ")} ]`;
+        return `[${arr.join(", ")}]`;
     }
 }
 
@@ -243,6 +243,19 @@ class InfixExpression extends Expression {
     }
 }
 
+class IndexExpression extends Expression {
+    index;
+
+    constructor(token, left) {
+        super(token);
+        this.left = left;
+    }
+
+    toString() {
+        return `(${this.left.toString()}[${this.index}])`;
+    }
+}
+
 export {
     Program,
     LetStatement,
@@ -259,4 +272,5 @@ export {
     CallExpression,
     PrefixExpression,
     InfixExpression,
+    IndexExpression,
 };

@@ -383,6 +383,8 @@ function testOperatorPrecedenceParsing() {
         ["3 > 5 == false", "((3 > 5) == false)"],
         ["3 < 5 == true", "((3 < 5) == true)"],
         ["a + add(b * c) + d", "((a + add((b * c))) + d)"],
+        ["a * [1, 2, 3, 4][b + c] * d", "((a * ([1, 2, 3, 4][(b + c)])) * d)"],
+        ["add(a * b[2], b[1], 2 * [1, 2][1])", "add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))"],
     ];
 
     let failed = 0;
@@ -759,11 +761,9 @@ function testArrayLiteralParsing() {
         [1, 2 * 2, 3 + 3];  
     `;
 
-    const tests = ["hello world"];
-
     const program = parseProgram(input);
     if (!programParsingSuccessful(program)) {
-        return { totalTests: tests.length, failedTests: tests.length };
+        return { totalTests: 1, failedTests: tests.length };
     }
 
     const statement = program.statements[0];
@@ -781,11 +781,57 @@ function testArrayLiteralParsing() {
         if (!testInfixExpression(0, array.elements[2], 3, "+", 3)) failed = true;
     }
     failed = failed ? 1 : 0;
-    return { totalTests: tests.length, failedTests: failed };
+    return { totalTests: 1, failedTests: failed };
+}
+
+function testIndexExpressionParsing() {
+    Log.info("Parser Test", "testing testIndexExpressionParsing()");
+    const input = `
+        myArray[1 + 1];  
+    `;
+
+    const program = parseProgram(input);
+    if (!programParsingSuccessful(program)) {
+        return { totalTests: 1, failedTests: tests.length };
+    }
+
+    const statement = program.statements[0];
+    const indexExpression = statement.expression;
+    let failed = false;
+    if (indexExpression.constructor.name !== "IndexExpression") {
+        Log.error("Parser Test", `expression not IndexExpression, got=${indexExpression.constructor.name}`);
+        failed = true;
+    }
+    if (!testIdentifier(0, indexExpression.left, "myArray")) failed = true;
+    if (!testInfixExpression(0, indexExpression.index, 1, "+", 1)) failed = true;
+
+    failed = failed ? 1 : 0;
+    return { totalTests: 1, failedTests: failed };
+}
+
+function testIdentifier(testNum, identifier, expected) {
+    let valid = true;
+    if (!identifier) {
+        Log.error("Parse Test", `test[${testNum}] identifier is undefined`);
+        return false;
+    }
+    if (identifier.constructor.name !== "Identifier") {
+        Log.error("Parser Test", `test[${testNum}] expected Identifier, got=${identifier.constructor.name}`);
+        valid = false;
+    }
+    if (identifier.value !== expected) {
+        Log.error("Parser Test", `test[${testNum}] wrong identifier, expected=${expected}, got=${identifier.value}`);
+        valid = false;
+    }
+    return valid;
 }
 
 function testIntegerLiteral(testNum, literal, expected) {
     let valid = true;
+    if (!literal) {
+        Log.error("Parse Test", `test[${testNum}] literal is undefined`);
+        return false;
+    }
     if (literal.constructor.name !== "IntegerLiteral") {
         Log.error("Parser Test", `test${testNum} expected IntegerLiteral, got ${expression.constructor.name}`);
         valid = false;
@@ -799,6 +845,10 @@ function testIntegerLiteral(testNum, literal, expected) {
 
 function testInfixExpression(testNum, expression, left, operator, right) {
     let valid = true;
+    if (!expression) {
+        Log.error("Parse Test", `test[${testNum}] expression is undefined`);
+        return false;
+    }
     if (expression.constructor.name !== "InfixExpression") {
         Log.error("Parser Test", `test${testNum} expected InfixExpression, got ${expression.constructor.name}`);
         valid = false;
@@ -859,4 +909,5 @@ export {
     testStringLiteralExpression,
     testCallExpressionParsing,
     testArrayLiteralParsing,
+    testIndexExpressionParsing,
 };

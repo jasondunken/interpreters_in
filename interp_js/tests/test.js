@@ -15,6 +15,7 @@ import {
     testStringLiteralExpression,
     testCallExpressionParsing,
     testArrayLiteralParsing,
+    testIndexExpressionParsing,
 } from "./tests-parser.js";
 import {
     testEvalIntegerExpression,
@@ -46,13 +47,14 @@ import {
     // addResult(results, testIntegerLiteralExpressions());
     // addResult(results, testParsingPrefixExpressions());
     // addResult(results, testParsingInfixExpressions());
-    // addResult(results, testOperatorPrecedenceParsing());
+    addResult(results, testOperatorPrecedenceParsing());
     // addResult(results, testIfExpressions());
     // addResult(results, testIfElseExpressions());
     // addResult(results, testFunctionLiteralParsing());
     // addResult(results, testCallExpressionParsing());
     // addResult(results, testStringLiteralExpression());
     addResult(results, testArrayLiteralParsing());
+    addResult(results, testIndexExpressionParsing());
     // // evaluator
     // addResult(results, testEvalIntegerExpression());
     // addResult(results, testEvalBooleanExpression());

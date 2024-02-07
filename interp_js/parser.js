@@ -15,6 +15,7 @@ import {
     CallExpression,
     StringLiteral,
     ArrayLiteral,
+    IndexExpression,
 } from "./ast.js";
 import { Tokens } from "./token.js";
 
@@ -27,6 +28,7 @@ const PRECEDENCE = {
     PRODUCT: 5,
     PREFIX: 6,
     CALL: 7,
+    INDEX: 8,
 };
 
 const PRECEDENCES = {
@@ -39,6 +41,7 @@ const PRECEDENCES = {
     SLASH: PRECEDENCE.PRODUCT,
     ASTERISK: PRECEDENCE.PRODUCT,
     LPAREN: PRECEDENCE.CALL,
+    LBRACKET: PRECEDENCE.INDEX,
 };
 
 class Parser {
@@ -77,6 +80,7 @@ class Parser {
         this.registerInfix(Tokens.LT.token, this.parseInfixExpression);
         this.registerInfix(Tokens.GT.token, this.parseInfixExpression);
         this.registerInfix(Tokens.LPAREN.token, this.parseCallExpression);
+        this.registerInfix(Tokens.LBRACKET.token, this.parseIndexExpression);
     }
 
     registerPrefix(tokenType, fn) {
@@ -367,7 +371,7 @@ class Parser {
             list.push(this.parseExpression(PRECEDENCE.LOWEST));
         }
         if (!this.expectPeek(end)) {
-            return new Null();
+            return null;
         }
         return list;
     }
@@ -386,6 +390,19 @@ class Parser {
         const precedence = self.currentPrecedence();
         self.nextToken();
         expression.right = self.parseExpression(precedence);
+
+        return expression;
+    }
+
+    parseIndexExpression(self, left) {
+        const expression = new IndexExpression(self.curToken, left);
+
+        self.nextToken();
+        expression.index = self.parseExpression(PRECEDENCE.LOWEST);
+
+        if (!self.expectPeek(Tokens.RBRACKET.token)) {
+            return null;
+        }
 
         return expression;
     }
