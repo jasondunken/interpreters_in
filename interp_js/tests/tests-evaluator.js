@@ -425,6 +425,41 @@ function testEvalBuiltinFunctions() {
     return { totalTests: tests.length, failedTests: failed };
 }
 
+function testEvalArrayLiteral() {
+    Log.info("Evaluator Test", "testEvalArrayLiteral()");
+    const tests = [{ input: "[1, 2 * 2, 3 + 3]", expected: [1, 4, 6] }];
+
+    let failed = 0;
+    for (let i = 0; i < tests.length; i++) {
+        const test = tests[i];
+        const evaluated = testEval(test.input);
+        let testFailed = false;
+        if (evaluated.type() !== ObjectType.ARRAY_OBJ) {
+            Log.error("Evaluator Test", `test[${i}] object is not array, got=${evaluated.type()}`);
+            failed++;
+            break;
+        }
+
+        if (evaluated.elements.length != test.expected.length) {
+            Log.error(
+                "Evaluator Test",
+                `test[${i}] array has wrong number of elements, expected=${
+                    test.expected.length
+                }, got=${evaluated.type()}`
+            );
+            testFailed = true;
+        }
+
+        if (!testIntegerObject(i, evaluated.elements[0], test.expected[0])) testFailed = true;
+        if (!testIntegerObject(i, evaluated.elements[1], test.expected[1])) testFailed = true;
+        if (!testIntegerObject(i, evaluated.elements[2], test.expected[2])) testFailed = true;
+
+        if (testFailed) failed++;
+    }
+
+    return { totalTests: tests.length, failedTests: failed };
+}
+
 export {
     testEvalIntegerExpression,
     testEvalBooleanExpression,
@@ -438,4 +473,5 @@ export {
     testEvalStringLiteral,
     testEvalStringConcatenation,
     testEvalBuiltinFunctions,
+    testEvalArrayLiteral,
 };

@@ -12,6 +12,7 @@ const ObjectType = {
     FUNCTION_OBJ: "FUNCTION",
     STRING_OBJ: "STRING",
     BUILTIN_OBJ: "BUILTIN",
+    ARRAY_OBJ: "ARRAY",
 };
 
 class Integer extends Object {
@@ -137,6 +138,19 @@ class Builtin extends Object {
     }
 }
 
-function builtinFunction(args) {}
+class ArrayObj extends Object {
+    constructor(elements) {
+        super();
+        this.elements = elements;
+    }
 
-export { ObjectType, Integer, Boolean, Null, ReturnValue, Error, FunctionObj, StringObj, Builtin };
+    type() {
+        return ObjectType.ARRAY_OBJ;
+    }
+
+    inspect() {
+        return `[${this.elements.join(", ")}]`;
+    }
+}
+
+export { ObjectType, Integer, Boolean, Null, ReturnValue, Error, FunctionObj, StringObj, Builtin, ArrayObj };

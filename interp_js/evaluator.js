@@ -1,4 +1,4 @@
-import { ObjectType, Integer, Boolean, ReturnValue, Null, Error, FunctionObj, StringObj } from "./object.js";
+import { ObjectType, Integer, Boolean, ReturnValue, Null, Error, FunctionObj, StringObj, ArrayObj } from "./object.js";
 import { builtins } from "./builtins.js";
 
 import { Log } from "./logger.js";
@@ -19,6 +19,7 @@ class Evaluator {
         FunctionLiteral: "FunctionLiteral",
         IntegerLiteral: "IntegerLiteral",
         StringLiteral: "StringLiteral",
+        ArrayLiteral: "ArrayLiteral",
         Boolean: "Boolean",
         IfExpression: "IfExpression",
         CallExpression: "CallExpression",
@@ -75,6 +76,12 @@ class Evaluator {
                     return args[0];
                 }
                 return this.applyFunction(func, args);
+            case this.NODE_TYPE.ArrayLiteral:
+                const elements = this.evalExpressions(node.elements, env);
+                if (elements.length == 1 && this.isError(elements[0])) {
+                    return elements[0];
+                }
+                return new ArrayObj(elements);
             case this.NODE_TYPE.ReturnStatement:
                 const returnVal = this.eval(node.returnValue, env);
                 if (this.isError(returnVal)) {
