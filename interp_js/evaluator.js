@@ -1,3 +1,4 @@
+import { NODE_TYPE } from "./ast.js";
 import { ObjectType, Integer, Boolean, ReturnValue, Null, Error, FunctionObj, StringObj, ArrayObj } from "./object.js";
 import { builtins } from "./builtins.js";
 
@@ -9,46 +10,28 @@ class Evaluator {
     FALSE = new Boolean(false);
     NULL = new Null();
 
-    NODE_TYPE = {
-        Program: "Program",
-        LetStatement: "LetStatement",
-        ReturnStatement: "ReturnStatement",
-        ExpressionStatement: "ExpressionStatement",
-        BlockStatement: "BlockStatement",
-        Identifier: "Identifier",
-        FunctionLiteral: "FunctionLiteral",
-        IntegerLiteral: "IntegerLiteral",
-        StringLiteral: "StringLiteral",
-        ArrayLiteral: "ArrayLiteral",
-        Boolean: "Boolean",
-        IfExpression: "IfExpression",
-        CallExpression: "CallExpression",
-        PrefixExpression: "PrefixExpression",
-        InfixExpression: "InfixExpression",
-    };
-
     eval(node, env) {
         const nodeType = node.constructor.name;
         // this.inspectNode(node);
         // console.log("eval ", nodeType);
         switch (nodeType) {
-            case this.NODE_TYPE.Program:
+            case NODE_TYPE.Program:
                 return this.evalProgram(node.statements, env);
-            case this.NODE_TYPE.ExpressionStatement:
+            case NODE_TYPE.ExpressionStatement:
                 return this.eval(node.expression, env);
-            case this.NODE_TYPE.IntegerLiteral:
+            case NODE_TYPE.IntegerLiteral:
                 return new Integer(node.value);
-            case this.NODE_TYPE.Boolean:
+            case NODE_TYPE.Boolean:
                 return this.boolNodeToBoolObject(node.value);
-            case this.NODE_TYPE.StringLiteral:
+            case NODE_TYPE.StringLiteral:
                 return new StringObj(node.value);
-            case this.NODE_TYPE.PrefixExpression:
+            case NODE_TYPE.PrefixExpression:
                 const pRight = this.eval(node.right, env);
                 if (this.isError(pRight)) {
                     return pRight;
                 }
                 return this.evalPrefixExpression(node.operator, pRight, env);
-            case this.NODE_TYPE.InfixExpression:
+            case NODE_TYPE.InfixExpression:
                 const right = this.eval(node.right, env);
                 if (this.isError(right)) {
                     return right;
@@ -58,15 +41,15 @@ class Evaluator {
                     return left;
                 }
                 return this.evalInfixExpression(node.operator, left, right, env);
-            case this.NODE_TYPE.IfExpression:
+            case NODE_TYPE.IfExpression:
                 return this.evalIfExpression(node, env);
-            case this.NODE_TYPE.BlockStatement:
+            case NODE_TYPE.BlockStatement:
                 return this.evalBlockStatement(node, env);
-            case this.NODE_TYPE.FunctionLiteral:
+            case NODE_TYPE.FunctionLiteral:
                 const params = node.parameters;
                 const body = node.body;
                 return new FunctionObj(params, body, env);
-            case this.NODE_TYPE.CallExpression:
+            case NODE_TYPE.CallExpression:
                 const func = this.eval(node.func, env);
                 if (this.isError(func)) {
                     return func;
@@ -76,26 +59,26 @@ class Evaluator {
                     return args[0];
                 }
                 return this.applyFunction(func, args);
-            case this.NODE_TYPE.ArrayLiteral:
+            case NODE_TYPE.ArrayLiteral:
                 const elements = this.evalExpressions(node.elements, env);
                 if (elements.length == 1 && this.isError(elements[0])) {
                     return elements[0];
                 }
                 return new ArrayObj(elements);
-            case this.NODE_TYPE.ReturnStatement:
+            case NODE_TYPE.ReturnStatement:
                 const returnVal = this.eval(node.returnValue, env);
                 if (this.isError(returnVal)) {
                     return returnVal;
                 }
                 return new ReturnValue(returnVal);
-            case this.NODE_TYPE.LetStatement:
+            case NODE_TYPE.LetStatement:
                 const letVal = this.eval(node.value, env);
                 if (this.isError(letVal)) {
                     return letVal;
                 }
                 env.set(node.name.value, letVal);
                 return letVal;
-            case this.NODE_TYPE.Identifier:
+            case NODE_TYPE.Identifier:
                 return this.evalIdentifier(node, env);
             default:
                 Log.error(this.constructor.name, `unrecognized node type: ${nodeType}`);

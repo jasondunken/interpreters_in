@@ -1,5 +1,23 @@
 import { Tokens } from "./token.js";
 
+const NODE_TYPE = {
+    Program: "Program",
+    LetStatement: "LetStatement",
+    ReturnStatement: "ReturnStatement",
+    ExpressionStatement: "ExpressionStatement",
+    BlockStatement: "BlockStatement",
+    Identifier: "Identifier",
+    FunctionLiteral: "FunctionLiteral",
+    IntegerLiteral: "IntegerLiteral",
+    StringLiteral: "StringLiteral",
+    ArrayLiteral: "ArrayLiteral",
+    Boolean: "Boolean",
+    IfExpression: "IfExpression",
+    CallExpression: "CallExpression",
+    PrefixExpression: "PrefixExpression",
+    InfixExpression: "InfixExpression",
+};
+
 class Program {
     statements = [];
 
@@ -257,6 +275,7 @@ class IndexExpression extends Expression {
 }
 
 export {
+    NODE_TYPE,
     Program,
     LetStatement,
     ReturnStatement,
