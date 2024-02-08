@@ -41,6 +41,16 @@ class Evaluator {
                     return left;
                 }
                 return this.evalInfixExpression(node.operator, left, right, env);
+            case NODE_TYPE.IndexExpression:
+                const eLeft = this.eval(node.left, env);
+                if (this.isError(eLeft)) {
+                    return eLeft;
+                }
+                const index = this.eval(node.index, env);
+                if (this.isError(index)) {
+                    return index;
+                }
+                return this.evalIndexExpression(eLeft, index);
             case NODE_TYPE.IfExpression:
                 return this.evalIfExpression(node, env);
             case NODE_TYPE.BlockStatement:
@@ -178,6 +188,23 @@ class Evaluator {
         const leftVal = left.value;
         const rightVal = right.value;
         return new StringObj(`${leftVal}${rightVal}`);
+    }
+
+    evalIndexExpression(left, index) {
+        if (left.type() !== ObjectType.ARRAY_OBJ && index.type() !== ObjectType.INTEGER_OBJ) {
+            return this.newError(`index operator not supported: ${left.type()}`);
+        }
+        return this.evalArrayIndexExpression(left, index);
+    }
+
+    evalArrayIndexExpression(left, index) {
+        const i = index.value;
+        const max = left.elements.length - 1;
+        if (i < 0 || i > max) {
+            return new Null();
+        }
+
+        return new Integer(left.elements[i].value);
     }
 
     evalIfExpression(expression, env) {

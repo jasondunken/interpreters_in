@@ -31,6 +31,7 @@ import {
     testEvalStringConcatenation,
     testEvalBuiltinFunctions,
     testEvalArrayLiteral,
+    testEvalArrayIndexExpression,
 } from "./tests-evaluator.js";
 
 (function runTests() {
@@ -70,6 +71,7 @@ import {
     addResult(results, testEvalStringConcatenation());
     addResult(results, testEvalBuiltinFunctions());
     addResult(results, testEvalArrayLiteral());
+    addResult(results, testEvalArrayIndexExpression());
 
     Log.info("interp_js", "test suite completed!");
     Log.testResult("interp_js", results.totalTests - results.failedTests, results.failedTests);

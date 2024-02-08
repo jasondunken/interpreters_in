@@ -16,6 +16,7 @@ const NODE_TYPE = {
     CallExpression: "CallExpression",
     PrefixExpression: "PrefixExpression",
     InfixExpression: "InfixExpression",
+    IndexExpression: "IndexExpression",
 };
 
 class Program {
