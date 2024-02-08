@@ -103,8 +103,8 @@ class FunctionObj extends Object {
     }
 
     inspect() {
-        const p = this.parameters.map((p) => p.string());
-        return `fn(${p.join(", ")}) {\n${this.body.string()}\n}`;
+        const p = this.parameters.map((p) => p.value);
+        return `fn(${p.join(", ")}) {\n${this.body.toString()}\n}`;
     }
 }
 
@@ -149,7 +149,11 @@ class ArrayObj extends Object {
     }
 
     inspect() {
-        return `[${this.elements.join(", ")}]`;
+        const values = [];
+        for (const element of this.elements) {
+            values.push(element.value);
+        }
+        return `[${values.join(", ")}]`;
     }
 }
 
