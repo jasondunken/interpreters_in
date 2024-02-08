@@ -105,7 +105,11 @@ class Monkey {
                 console.log("evaluation: ", evaluation);
             }
             if (evaluation) {
-                console.log(evaluation.value);
+                if (evaluation.value) {
+                    console.log(evaluation.value);
+                } else {
+                    console.log(evaluation.inspect());
+                }
             }
         }
     }
