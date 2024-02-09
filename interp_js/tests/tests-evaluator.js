@@ -323,7 +323,7 @@ function testEvalFunctionApplication() {
             `test[${i}] input "${tests[i].input}", expected '${tests[i].expected}', got '${evaluation.value}'`
         );
         if (evaluation.type() == ObjectType.ERROR_OBJ) {
-            Log.error("Evaluator Test", `test[${i}] ${evaluation.string()}`);
+            Log.error("Evaluator Test", `test[${i}] ${evaluation.toString()}`);
             failed++;
         } else if (!testIntegerObject(i, evaluation, tests[i].expected)) {
             failed++;
@@ -346,9 +346,9 @@ function testEvalStringLiteral() {
             `test[${i}] input "${tests[i].input}", expected '${tests[i].expected}', got '${evaluation.value}'`
         );
         if (evaluation.type() == ObjectType.ERROR_OBJ) {
-            Log.error("Evaluator Test", `test[${i}] ${evaluation.string()}`);
+            Log.error("Evaluator Test", `test[${i}] ${evaluation.toString()}`);
             testFailed = true;
-        } else if (evaluation.string() != tests[i].expected) {
+        } else if (evaluation.toString() != tests[i].expected) {
             testFailed = true;
         }
         if (testFailed) failed++;
@@ -371,7 +371,7 @@ function testEvalStringConcatenation() {
             `test[${i}] input "${test.input}", expected '${test.expected}', got '${evaluation.value}'`
         );
         if (evaluation.type() == ObjectType.ERROR_OBJ) {
-            Log.error("Evaluator Test", `test[${i}] ${evaluation.string()}`);
+            Log.error("Evaluator Test", `test[${i}] ${evaluation.toString()}`);
             testFailed = true;
         } else if (evaluation.type() != ObjectType.STRING_OBJ) {
             Log.error("Evaluator Test", `test[${i}] expected STRING object, got ${evaluation.type()}`);
@@ -388,41 +388,75 @@ function testEvalStringConcatenation() {
 
 function testEvalBuiltinFunctions() {
     Log.info("Evaluator Test", "testEvalBuiltinFunctions()");
-    const tests = [
+    const testsValid = [
         { input: 'len("");', expected: 0 },
         { input: 'len("four");', expected: 4 },
         { input: 'len("hello world");', expected: 11 },
+    ];
+
+    const testsError = [
         { input: "len(1);", expected: "argument to 'len' not supported, got INTEGER" },
         { input: 'len("one", "two");', expected: "wrong number of arguments. got=2, want=1" },
     ];
+    const totalTests = testsValid.length + testsError.length;
 
     let failed = 0;
-    for (let i = 0; i < tests.length; i++) {
-        const test = tests[i];
-        const evaluated = testEval(test.input);
-        let testFailed = false;
+    for (let i = 0; i < testsValid.length; i++) {
+        const test = testsValid[i];
+        const evaluation = testEval(test.input);
+        Log.info(
+            "Evaluator Test",
+            `valid test[${i}] input "${test.input}", expected 'INTEGER', got '${
+                evaluation.value !== undefined ? evaluation.value : evaluation.message
+            }'`
+        );
 
-        switch (evaluated.type()) {
+        let testFailed = false;
+        switch (evaluation.type()) {
             case ObjectType.INTEGER_OBJ:
-                testIntegerObject(i, evaluated, test.expected);
+                testFailed = !testIntegerObject(i, evaluation, test.expected);
                 break;
             case ObjectType.ERROR_OBJ:
-                if (evaluated.message !== test.expected) {
-                    Log.error(
-                        "Evaluator Test",
-                        `wrong error message. expected=${test.expected}, got="${evaluated.message}"`
-                    );
-                    testFailed = true;
-                }
+                Log.error("Evaluator Test", `ERROR valid test[${i}] ${evaluation.message}`);
+                testFailed = true;
                 break;
             default:
-                Log.error("Evaluator Test", `object is not ERROR, got=${evaluated.type()}`);
+                Log.error("Evaluator Test", `object is not INTEGER, got=${evaluation.type()}`);
                 testFailed = true;
         }
         if (testFailed) failed++;
     }
 
-    return { totalTests: tests.length, failedTests: failed };
+    for (let i = 0; i < testsError.length; i++) {
+        const test = testsError[i];
+        const testNum = i + testsValid.length;
+        const evaluation = testEval(test.input);
+        Log.info(
+            "Evaluator Test",
+            `error test[${testNum}] input "${test.input}", expected 'ERROR', got '${
+                evaluation.value !== undefined ? evaluation.value : evaluation.toString()
+            }'`
+        );
+
+        let testFailed = false;
+        switch (evaluation.type()) {
+            case ObjectType.ERROR_OBJ:
+                if (evaluation.message !== test.expected) {
+                    Log.error(
+                        "Evaluator Test",
+                        `error test[${testNum}] expected=${test.expected}, got="${evaluation.type()}"`
+                    );
+                    testFailed = true;
+                }
+                break;
+            default:
+                Log.error("Evaluator Test", `error test[${testNum}] object is not ERROR, got=${evaluation.type()}`);
+                testFailed = true;
+        }
+        if (testFailed) failed++;
+    }
+
+    return { totalTests, failedTests: failed };
 }
 
 function testEvalArrayLiteral() {
@@ -432,27 +466,29 @@ function testEvalArrayLiteral() {
     let failed = 0;
     for (let i = 0; i < tests.length; i++) {
         const test = tests[i];
-        const evaluated = testEval(test.input);
+        const evaluation = testEval(test.input);
+        Log.info("Evaluator Test", `test[${i}] input "${test.input}", expected 'ARRAY', got '${evaluation.type()}'`);
+
         let testFailed = false;
-        if (evaluated.type() !== ObjectType.ARRAY_OBJ) {
-            Log.error("Evaluator Test", `test[${i}] object is not array, got=${evaluated.type()}`);
+        if (evaluation.type() !== ObjectType.ARRAY_OBJ) {
+            Log.error("Evaluator Test", `test[${i}] object is not array, got=${evaluation.type()}`);
             failed++;
             break;
         }
 
-        if (evaluated.elements.length != test.expected.length) {
+        if (evaluation.elements.length != test.expected.length) {
             Log.error(
                 "Evaluator Test",
                 `test[${i}] array has wrong number of elements, expected=${
                     test.expected.length
-                }, got=${evaluated.type()}`
+                }, got=${evaluation.type()}`
             );
             testFailed = true;
         }
 
-        if (!testIntegerObject(i, evaluated.elements[0], test.expected[0])) testFailed = true;
-        if (!testIntegerObject(i, evaluated.elements[1], test.expected[1])) testFailed = true;
-        if (!testIntegerObject(i, evaluated.elements[2], test.expected[2])) testFailed = true;
+        if (!testIntegerObject(i, evaluation.elements[0], test.expected[0])) testFailed = true;
+        if (!testIntegerObject(i, evaluation.elements[1], test.expected[1])) testFailed = true;
+        if (!testIntegerObject(i, evaluation.elements[2], test.expected[2])) testFailed = true;
 
         if (testFailed) failed++;
     }
@@ -462,7 +498,7 @@ function testEvalArrayLiteral() {
 
 function testEvalArrayIndexExpression() {
     Log.info("Evaluator Test", "testEvalArrayIndexExpression()");
-    const tests = [
+    const testsValid = [
         { input: "[1, 2, 3][0]", expected: 1 },
         { input: "[1, 2, 3][1]", expected: 2 },
         { input: "[1, 2, 3][2]", expected: 3 },
@@ -471,19 +507,35 @@ function testEvalArrayIndexExpression() {
         { input: "let myArray = [1, 2, 3]; myArray[2];", expected: 3 },
         { input: "let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2];", expected: 6 },
         { input: "let myArray = [1, 2, 3]; let i = myArray[0]; myArray[i];", expected: 2 },
+    ];
+
+    const testsError = [
         { input: "[1, 2, 3][3];", expected: null },
         { input: "[1, 2, 3][-1];", expected: null },
     ];
+    const totalTests = testsValid.length + testsError.length;
 
     let failed = 0;
-    for (let i = 0; i < tests.length; i++) {
-        const test = tests[i];
-        const evaluated = testEval(test.input);
+    for (let i = 0; i < testsValid.length; i++) {
+        const test = testsValid[i];
+        const evaluation = testEval(test.input);
+        Log.info("Evaluator Test", `test[${i}] input "${test.input}", expected 'INTEGER', got '${evaluation.type()}'`);
 
-        if (!testIntegerObject(i, evaluated, test.expected)) failed++;
+        if (!testIntegerObject(i, evaluation, test.expected)) failed++;
+    }
+    for (let i = 0; i < testsError.length; i++) {
+        const test = testsError[i];
+        const testNum = i + testsValid.length;
+        const evaluation = testEval(test.input);
+        Log.info(
+            "Evaluator Test",
+            `test[${testNum}] input "${test.input}", expected 'NULL', got '${evaluation.type()}'`
+        );
+
+        if (!testIntegerObject(i, evaluation, test.expected)) failed++;
     }
 
-    return { totalTests: tests.length, failedTests: failed };
+    return { totalTests, failedTests: failed };
 }
 export {
     testEvalIntegerExpression,
