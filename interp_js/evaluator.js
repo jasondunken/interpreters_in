@@ -1,14 +1,24 @@
 import { NODE_TYPE } from "./ast.js";
-import { ObjectType, Integer, Boolean, ReturnValue, Null, Error, FunctionObj, StringObj, ArrayObj } from "./object.js";
+import {
+    ObjectType,
+    IntegerObj,
+    BooleanObj,
+    ReturnValueObj,
+    NullObj,
+    ErrorObj,
+    FunctionObj,
+    StringObj,
+    ArrayObj,
+} from "./object.js";
 import { builtins } from "./builtins.js";
 
 import { Log } from "./logger.js";
 import { Environment } from "./environment.js";
 
 class Evaluator {
-    TRUE = new Boolean(true);
-    FALSE = new Boolean(false);
-    NULL = new Null();
+    TRUE = new BooleanObj(true);
+    FALSE = new BooleanObj(false);
+    NULL = new NullObj();
 
     eval(node, env) {
         const nodeType = node.constructor.name;
@@ -20,7 +30,7 @@ class Evaluator {
             case NODE_TYPE.ExpressionStatement:
                 return this.eval(node.expression, env);
             case NODE_TYPE.IntegerLiteral:
-                return new Integer(node.value);
+                return new IntegerObj(node.value);
             case NODE_TYPE.Boolean:
                 return this.boolNodeToBoolObject(node.value);
             case NODE_TYPE.StringLiteral:
@@ -80,7 +90,7 @@ class Evaluator {
                 if (this.isError(returnVal)) {
                     return returnVal;
                 }
-                return new ReturnValue(returnVal);
+                return new ReturnValueObj(returnVal);
             case NODE_TYPE.LetStatement:
                 const letVal = this.eval(node.value, env);
                 if (this.isError(letVal)) {
@@ -139,7 +149,7 @@ class Evaluator {
 
     evalInfixExpression(operator, left, right, env) {
         if (left.type() === ObjectType.INTEGER_OBJ && right.type() === ObjectType.INTEGER_OBJ) {
-            return this.evalIntegerInfixExpression(operator, left, right, env);
+            return this.evalIntegerObjInfixExpression(operator, left, right, env);
         }
         if (left.type() === ObjectType.STRING_OBJ && right.type() === ObjectType.STRING_OBJ) {
             return this.evalStringInfixExpression(operator, left, right, env);
@@ -157,16 +167,16 @@ class Evaluator {
         }
     }
 
-    evalIntegerInfixExpression(operator, left, right, env) {
+    evalIntegerObjInfixExpression(operator, left, right, env) {
         switch (operator) {
             case "+":
-                return new Integer(left.value + right.value);
+                return new IntegerObj(left.value + right.value);
             case "-":
-                return new Integer(left.value - right.value);
+                return new IntegerObj(left.value - right.value);
             case "*":
-                return new Integer(left.value * right.value);
+                return new IntegerObj(left.value * right.value);
             case "/":
-                return new Integer(Math.floor(left.value / right.value));
+                return new IntegerObj(Math.floor(left.value / right.value));
             case "<":
                 return this.boolNodeToBoolObject(left.value < right.value);
             case ">":
@@ -201,10 +211,10 @@ class Evaluator {
         const i = index.value;
         const max = left.elements.length - 1;
         if (i < 0 || i > max) {
-            return new Null();
+            return new NullObj();
         }
 
-        return new Integer(left.elements[i].value);
+        return new IntegerObj(left.elements[i].value);
     }
 
     evalIfExpression(expression, env) {
@@ -251,7 +261,7 @@ class Evaluator {
             return this.newError(`unknown operator: -${right.type()}`);
         }
         const value = right.value;
-        return new Integer(-value);
+        return new IntegerObj(-value);
     }
 
     evalExpressions(exps, env) {
@@ -311,7 +321,7 @@ class Evaluator {
     }
 
     newError(message) {
-        return new Error(message);
+        return new ErrorObj(message);
     }
 
     isError(obj) {

@@ -1,8 +1,3 @@
-class Object {
-    type() {}
-    inspect() {}
-}
-
 const ObjectType = {
     INTEGER_OBJ: "INTEGER",
     BOOLEAN_OBJ: "BOOLEAN",
@@ -15,9 +10,8 @@ const ObjectType = {
     ARRAY_OBJ: "ARRAY",
 };
 
-class Integer extends Object {
+class IntegerObj {
     constructor(value) {
-        super();
         this.value = value;
     }
 
@@ -25,14 +19,13 @@ class Integer extends Object {
         return ObjectType.INTEGER_OBJ;
     }
 
-    inspect() {
+    toString() {
         return `${this.value}`;
     }
 }
 
-class Boolean extends Object {
+class BooleanObj {
     constructor(value) {
-        super();
         this.value = value;
     }
 
@@ -40,14 +33,13 @@ class Boolean extends Object {
         return ObjectType.BOOLEAN_OBJ;
     }
 
-    inspect() {
+    toString() {
         return `${this.value}`;
     }
 }
 
-class Null extends Object {
+class NullObj {
     constructor() {
-        super();
         this.value = null;
     }
 
@@ -55,14 +47,13 @@ class Null extends Object {
         return ObjectType.NULL_OBJ;
     }
 
-    inspect() {
+    toString() {
         return "null";
     }
 }
 
-class ReturnValue extends Object {
+class ReturnValueObj {
     constructor(value) {
-        super();
         this.returnValue = value;
     }
 
@@ -70,14 +61,13 @@ class ReturnValue extends Object {
         return ObjectType.RETURN_VALUE_OBJ;
     }
 
-    inspect() {
+    toString() {
         return `${this.returnValue}`;
     }
 }
 
-class Error extends Object {
+class ErrorObj {
     constructor(message) {
-        super();
         this.message = message;
     }
 
@@ -85,14 +75,13 @@ class Error extends Object {
         return ObjectType.ERROR_OBJ;
     }
 
-    string() {
+    toString() {
         return `ERROR: ${this.message}`;
     }
 }
 
-class FunctionObj extends Object {
+class FunctionObj {
     constructor(params, body, env) {
-        super();
         this.parameters = params;
         this.body = body;
         this.env = env;
@@ -102,15 +91,14 @@ class FunctionObj extends Object {
         return ObjectType.FUNCTION_OBJ;
     }
 
-    inspect() {
+    toString() {
         const p = this.parameters.map((p) => p.value);
         return `fn(${p.join(", ")}) {\n${this.body.toString()}\n}`;
     }
 }
 
-class StringObj extends Object {
+class StringObj {
     constructor(value) {
-        super();
         this.value = value;
     }
 
@@ -118,14 +106,13 @@ class StringObj extends Object {
         return ObjectType.STRING_OBJ;
     }
 
-    string() {
+    toString() {
         return this.value;
     }
 }
 
-class Builtin extends Object {
+class BuiltinFnObj {
     constructor(fn) {
-        super();
         this.fn = fn;
     }
 
@@ -133,14 +120,13 @@ class Builtin extends Object {
         return ObjectType.BUILTIN_OBJ;
     }
 
-    inspect() {
+    toString() {
         return "builtin function";
     }
 }
 
-class ArrayObj extends Object {
+class ArrayObj {
     constructor(elements) {
-        super();
         this.elements = elements;
     }
 
@@ -148,13 +134,31 @@ class ArrayObj extends Object {
         return ObjectType.ARRAY_OBJ;
     }
 
-    inspect() {
+    toString() {
         const values = [];
         for (const element of this.elements) {
+            if (element.type() === ObjectType.FUNCTION_OBJ) {
+                console.log("array element: ", element);
+                let ident = element.env.store.find((key) => {
+                    return element.env.store[key] == this;
+                });
+                console.log("ident: ", ident);
+            }
             values.push(element.value);
         }
         return `[${values.join(", ")}]`;
     }
 }
 
-export { ObjectType, Integer, Boolean, Null, ReturnValue, Error, FunctionObj, StringObj, Builtin, ArrayObj };
+export {
+    ObjectType,
+    IntegerObj,
+    BooleanObj,
+    NullObj,
+    ReturnValueObj,
+    ErrorObj,
+    FunctionObj,
+    StringObj,
+    BuiltinFnObj,
+    ArrayObj,
+};
