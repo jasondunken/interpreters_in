@@ -138,15 +138,16 @@ class ArrayObj {
         const values = [];
         for (const element of this.elements) {
             if (element.type() === ObjectType.FUNCTION_OBJ) {
-                console.log("array element: ", element);
-                let ident = element.env.store.find((key) => {
-                    return element.env.store[key] == this;
+                let ident = Object.keys(element.env.store).find((key) => {
+                    return element.env.store[key] === element;
                 });
-                console.log("ident: ", ident);
+                values.push(ident);
+            } else {
+                values.push(element.value);
             }
-            values.push(element.value);
         }
-        return `[${values.join(", ")}]`;
+        console.log("array: ", this);
+        return `(${this.elements.length})[${values.join(", ")}]`;
     }
 }
 
