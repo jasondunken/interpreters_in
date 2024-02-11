@@ -2,13 +2,14 @@ import { NODE_TYPE } from "./ast.js";
 import {
     ObjectType,
     IntegerObj,
-    BooleanObj,
     ReturnValueObj,
-    NullObj,
     ErrorObj,
     FunctionObj,
     StringObj,
     ArrayObj,
+    TRUE,
+    FALSE,
+    NULL,
 } from "./object.js";
 import { builtins } from "./builtins.js";
 
@@ -16,10 +17,6 @@ import { Log } from "./logger.js";
 import { Environment } from "./environment.js";
 
 class Evaluator {
-    TRUE = new BooleanObj(true);
-    FALSE = new BooleanObj(false);
-    NULL = new NullObj();
-
     eval(node, env) {
         const nodeType = node.constructor.name;
         // this.inspectNode(node);
@@ -102,7 +99,7 @@ class Evaluator {
                 return this.evalIdentifier(node, env);
             default:
                 Log.error(this.constructor.name, `unrecognized node type: ${nodeType}`);
-                return this.NULL;
+                return NULL;
         }
     }
 
@@ -211,7 +208,7 @@ class Evaluator {
         const i = index.value;
         const max = left.elements.length - 1;
         if (i < 0 || i > max) {
-            return new NullObj();
+            return NULL;
         }
         return left.elements[i];
     }
@@ -226,7 +223,7 @@ class Evaluator {
         } else if (expression.alternative) {
             return this.eval(expression.alternative, env);
         }
-        return this.NULL;
+        return NULL;
     }
 
     isTruthy(condition) {
@@ -245,13 +242,13 @@ class Evaluator {
     evalBangOperatorExpression(right, env) {
         switch (right.value) {
             case true:
-                return this.FALSE;
+                return FALSE;
             case false:
-                return this.TRUE;
+                return TRUE;
             case null:
-                return this.TRUE;
+                return TRUE;
             default:
-                return this.FALSE;
+                return FALSE;
         }
     }
 
@@ -305,7 +302,7 @@ class Evaluator {
     }
 
     boolNodeToBoolObject(value) {
-        return value ? this.TRUE : this.FALSE;
+        return value ? TRUE : FALSE;
     }
 
     evalIdentifier(node, env) {

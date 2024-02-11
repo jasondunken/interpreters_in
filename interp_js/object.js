@@ -151,6 +151,10 @@ class ArrayObj {
     }
 }
 
+const TRUE = new BooleanObj(true);
+const FALSE = new BooleanObj(false);
+const NULL = new NullObj();
+
 export {
     ObjectType,
     IntegerObj,
@@ -162,4 +166,7 @@ export {
     StringObj,
     BuiltinFnObj,
     ArrayObj,
+    TRUE,
+    FALSE,
+    NULL,
 };
