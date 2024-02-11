@@ -213,8 +213,7 @@ class Evaluator {
         if (i < 0 || i > max) {
             return new NullObj();
         }
-
-        return new IntegerObj(left.elements[i].value);
+        return left.elements[i];
     }
 
     evalIfExpression(expression, env) {
