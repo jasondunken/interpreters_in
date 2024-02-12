@@ -19,7 +19,7 @@ const builtins = {
             return new ErrorObj(`wrong number of arguments. got=${args.length}, want=1`);
         }
         if (args[0].type() != ObjectType.ARRAY_OBJ) {
-            return new ErrorObj(`argument to 'first' ust be an ARRAY, got ${orgs[0].type()}`);
+            return new ErrorObj(`argument to 'first' must be an ARRAY, got ${orgs[0].type()}`);
         }
         if (args[0].elements.length > 0) {
             return args[0].elements[0];
@@ -31,7 +31,7 @@ const builtins = {
             return new ErrorObj(`wrong number of arguments. got=${args.length}, want=1`);
         }
         if (args[0].type() != ObjectType.ARRAY_OBJ) {
-            return new ErrorObj(`argument to 'first' ust be an ARRAY, got ${orgs[0].type()}`);
+            return new ErrorObj(`argument to 'last' must be an ARRAY, got ${orgs[0].type()}`);
         }
         if (args[0].elements.length > 0) {
             return args[0].elements[args[0].elements.length - 1];
@@ -43,10 +43,22 @@ const builtins = {
             return new ErrorObj(`wrong number of arguments. got=${args.length}, want=1`);
         }
         if (args[0].type() != ObjectType.ARRAY_OBJ) {
-            return new ErrorObj(`argument to 'first' ust be an ARRAY, got ${orgs[0].type()}`);
+            return new ErrorObj(`argument to 'rest' must be an ARRAY, got ${orgs[0].type()}`);
         }
         if (args[0].elements.length > 0) {
             return new ArrayObj(args[0].elements.slice(1));
+        }
+        return NULL;
+    }),
+    push: new BuiltinFnObj((args) => {
+        if (args.length != 2) {
+            return new ErrorObj(`wrong number of arguments. got=${args.length}, want=1`);
+        }
+        if (args[0].type() != ObjectType.ARRAY_OBJ) {
+            return new ErrorObj(`argument to 'push' must be an ARRAY, got ${orgs[0].type()}`);
+        }
+        if (args[0].elements.length > 0) {
+            return new ArrayObj([...args[0].elements, args[1]]);
         }
         return NULL;
     }),
