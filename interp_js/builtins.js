@@ -1,4 +1,4 @@
-import { ObjectType, IntegerObj, ErrorObj, BuiltinFnObj, NULL } from "./object.js";
+import { ObjectType, IntegerObj, ArrayObj, ErrorObj, BuiltinFnObj, NULL } from "./object.js";
 
 const builtins = {
     len: new BuiltinFnObj((args) => {
@@ -35,6 +35,18 @@ const builtins = {
         }
         if (args[0].elements.length > 0) {
             return args[0].elements[args[0].elements.length - 1];
+        }
+        return NULL;
+    }),
+    rest: new BuiltinFnObj((args) => {
+        if (args.length != 1) {
+            return new ErrorObj(`wrong number of arguments. got=${args.length}, want=1`);
+        }
+        if (args[0].type() != ObjectType.ARRAY_OBJ) {
+            return new ErrorObj(`argument to 'first' ust be an ARRAY, got ${orgs[0].type()}`);
+        }
+        if (args[0].elements.length > 0) {
+            return new ArrayObj(args[0].elements.slice(1));
         }
         return NULL;
     }),
