@@ -146,7 +146,6 @@ class ArrayObj {
                 values.push(element.value);
             }
         }
-        console.log("array: ", this);
         return `(${this.elements.length})[${values.join(", ")}]`;
     }
 }
