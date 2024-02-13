@@ -30,6 +30,7 @@ const Tokens = {
     // delimiters
     COMMA: { token: "COMMA", literal: "," },
     SEMICOLON: { token: "SEMICOLON", literal: ";" },
+    COLON: { token: "COLON", literal: ":" },
 
     LPAREN: { token: "LPAREN", literal: "(" },
     RPAREN: { token: "RPAREN", literal: ")" },

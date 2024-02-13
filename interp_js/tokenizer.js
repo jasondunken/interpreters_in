@@ -81,6 +81,9 @@ class Tokenizer {
             case Tokens.SEMICOLON.literal:
                 token = new Token(Tokens.SEMICOLON.token, this.ch);
                 break;
+            case Tokens.COLON.literal:
+                token = new Token(Tokens.COLON.token, this.ch);
+                break;
             case Tokens.LPAREN.literal:
                 token = new Token(Tokens.LPAREN.token, this.ch);
                 break;
