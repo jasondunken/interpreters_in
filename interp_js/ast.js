@@ -51,21 +51,7 @@ class Node {
     toString() {}
 }
 
-class Statement extends Node {
-    constructor(token) {
-        super(token);
-    }
-    statementNode() {}
-}
-
-class Expression extends Node {
-    constructor(token) {
-        super(token);
-    }
-    expressionNode() {}
-}
-
-class LetStatement extends Statement {
+class LetStatement extends Node {
     name;
     value;
 
@@ -81,7 +67,7 @@ class LetStatement extends Statement {
     }
 }
 
-class ReturnStatement extends Statement {
+class ReturnStatement extends Node {
     returnValue;
 
     constructor(token) {
@@ -96,7 +82,7 @@ class ReturnStatement extends Statement {
     }
 }
 
-class ExpressionStatement extends Statement {
+class ExpressionStatement extends Node {
     expression;
 
     constructor(token) {
@@ -111,7 +97,7 @@ class ExpressionStatement extends Statement {
     }
 }
 
-class BlockStatement extends Statement {
+class BlockStatement extends Node {
     constructor(token) {
         super(token);
         this.statements = []; // Statement[]
@@ -126,7 +112,7 @@ class BlockStatement extends Statement {
     }
 }
 
-class Identifier extends Expression {
+class Identifier extends Node {
     constructor(token, value) {
         super(token);
         this.value = value;
@@ -137,7 +123,7 @@ class Identifier extends Expression {
     }
 }
 
-class FunctionLiteral extends Expression {
+class FunctionLiteral extends Node {
     body; // BlockStatement
 
     constructor(token) {
@@ -154,7 +140,7 @@ class FunctionLiteral extends Expression {
     }
 }
 
-class StringLiteral extends Expression {
+class StringLiteral extends Node {
     constructor(token, value) {
         super(token);
         this.value = value;
@@ -165,7 +151,7 @@ class StringLiteral extends Expression {
     }
 }
 
-class IntegerLiteral extends Expression {
+class IntegerLiteral extends Node {
     constructor(token) {
         super(token);
     }
@@ -175,23 +161,11 @@ class IntegerLiteral extends Expression {
     }
 }
 
-class Boolean extends Expression {
-    constructor(token, value) {
-        super(token);
-        this.value = value;
-    }
-
-    toString() {
-        return this.token.literal;
-    }
-}
-
-class ArrayLiteral extends Expression {
+class ArrayLiteral extends Node {
+    elements;
     constructor(token) {
         super(token);
     }
-
-    expressionNode() {}
 
     toString() {
         let arr = [];
@@ -202,7 +176,31 @@ class ArrayLiteral extends Expression {
     }
 }
 
-class IfExpression extends Expression {
+class HashLiteral extends Node {
+    constructor(token, pairs = {}) {
+        super(token);
+        this.pairs = pairs;
+    }
+
+    toString() {
+        return `{\n${Object.keys(this.pairs).map((key) => {
+            return `\t${key}: ${this.pairs[key]},\n`;
+        })}}`;
+    }
+}
+
+class Boolean extends Node {
+    constructor(token, value) {
+        super(token);
+        this.value = value;
+    }
+
+    toString() {
+        return this.token.literal;
+    }
+}
+
+class IfExpression extends Node {
     constructor(token, condition, consequence, alternative) {
         super(token);
         this.condition = condition; // Expression
@@ -219,7 +217,7 @@ class IfExpression extends Expression {
     }
 }
 
-class CallExpression extends Expression {
+class CallExpression extends Node {
     constructor(token, func) {
         super(token);
         this.func = func;
@@ -235,7 +233,7 @@ class CallExpression extends Expression {
     }
 }
 
-class PrefixExpression extends Expression {
+class PrefixExpression extends Node {
     right;
 
     constructor(token, operator) {
@@ -248,7 +246,7 @@ class PrefixExpression extends Expression {
     }
 }
 
-class InfixExpression extends Expression {
+class InfixExpression extends Node {
     right;
 
     constructor(token, operator, left) {
@@ -262,7 +260,7 @@ class InfixExpression extends Expression {
     }
 }
 
-class IndexExpression extends Expression {
+class IndexExpression extends Node {
     index;
 
     constructor(token, left) {
@@ -286,8 +284,9 @@ export {
     FunctionLiteral,
     StringLiteral,
     IntegerLiteral,
-    Boolean,
     ArrayLiteral,
+    HashLiteral,
+    Boolean,
     IfExpression,
     CallExpression,
     PrefixExpression,
